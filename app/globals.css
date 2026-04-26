@@ -48,6 +48,10 @@ body {
   font-feature-settings: 'ss01', 'cv11';
 }
 
+/* Hide scrollbars on horizontal strips */
+.scroll-hidden::-webkit-scrollbar { display: none; }
+.scroll-hidden { scrollbar-width: none; -ms-overflow-style: none; }
+
 /* Paper texture overlay */
 body::before {
   content: '';
