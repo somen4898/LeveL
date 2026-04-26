@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LEVEL — Brand Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5f1e8;
+    --paper2: #ebe5d4;
+    --card: #fbf8f1;
+    --card2: #fdfbf6;
+    --bone: #faf5e8;
+    --ink: #161311;
+    --ink2: #3a342d;
+    --ink3: #6b6259;
+    --ink4: #9c9489;
+    --hair: #dcd2bf;
+    --hair2: #ebe2cf;
+    --ember: #c4622d;
+    --emberD: #a04e1f;
+    --emberL: #e8a26b;
+    --emberBg: #fbeadb;
+    --moss: #3d5341;
+    --mossL: #7c9377;
+    --mossBg: #e3eadf;
+    --rust: #8a3a1f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { position: relative; }
+  body::before { content: ''; position: fixed; inset: 0; pointer-events: none; background-image: radial-gradient(rgba(60,40,20,.04) 1px, transparent 1px); background-size: 3px 3px; opacity: .5; z-index: 0; }
+  main { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 80px 64px 120px; }
+
+  /* type */
+  .serif { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; }
+  .mono { font-family: 'Geist Mono', ui-monospace, Menlo, monospace; }
+  .eyebrow { font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink3); }
+  .label { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); }
+
+  /* sections */
+  section { margin-top: 88px; }
+  section:first-of-type { margin-top: 0; }
+  .section-head { display: grid; grid-template-columns: 60px 1fr; gap: 32px; padding-bottom: 28px; border-bottom: 1px solid var(--hair); margin-bottom: 32px; }
+  .section-head .num { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-size: 56px; line-height: 1; color: var(--ember); }
+  .section-head h2 { font-family: 'Instrument Serif', Georgia, serif; font-size: 48px; line-height: 1; margin: 0 0 8px 0; letter-spacing: -.015em; }
+  .section-head .sub { font-size: 14.5px; color: var(--ink2); max-width: 640px; line-height: 1.55; margin-top: 12px; }
+
+  /* hero */
+  .hero { padding: 80px 0 0 0; }
+  .hero .kicker { display: inline-flex; align-items: center; gap: 14px; padding: 8px 14px; border: 1px solid var(--ink); border-radius: 99px; background: var(--card); }
+  .hero .kicker .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ember); }
+  .hero .kicker span { font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink); }
+  .hero h1 { font-family: 'Instrument Serif', Georgia, serif; font-size: 144px; line-height: 0.92; letter-spacing: -.025em; margin: 36px 0 0 0; }
+  .hero h1 em { font-style: italic; color: var(--ember); }
+  .hero .lede { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-size: 26px; line-height: 1.42; margin: 32px 0 0 0; max-width: 720px; color: var(--ink2); }
+  .hero .meta { display: flex; gap: 48px; margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--hair); }
+  .hero .meta div { display: flex; flex-direction: column; gap: 4px; }
+  .hero .meta strong { font-size: 14px; font-weight: 600; }
+
+  /* cards */
+  .card { background: var(--card); border: 1px solid var(--hair); border-radius: 10px; padding: 24px; }
+  .card-flat { background: var(--bone); border: 1px solid var(--hair2); border-radius: 10px; padding: 24px; }
+  .card-ink { background: var(--ink); color: var(--bone); border-radius: 10px; padding: 28px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+
+  /* logo lockup */
+  .lockup-row { display: flex; gap: 16px; }
+  .lockup { flex: 1; aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid var(--hair); position: relative; overflow: hidden; }
+  .lockup .stamp { position: absolute; bottom: 12px; left: 16px; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+  .lockup.paper { background: var(--paper); }
+  .lockup.paper .stamp { color: var(--ink3); }
+  .lockup.bone { background: var(--bone); }
+  .lockup.bone .stamp { color: var(--ink3); }
+  .lockup.ink { background: var(--ink); }
+  .lockup.ink .stamp { color: var(--ink4); }
+  .lockup.ember { background: var(--ember); }
+  .lockup.ember .stamp { color: rgba(255,255,255,.5); }
+  .lockup.tile { aspect-ratio: 1 / 1; }
+
+  /* color swatches */
+  .swatch { border-radius: 10px; overflow: hidden; border: 1px solid var(--hair); }
+  .swatch .chip { height: 180px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; }
+  .swatch .chip .chip-name { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-size: 30px; line-height: 1; }
+  .swatch .chip .chip-hex { font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: .04em; }
+  .swatch .meta { padding: 16px 20px; background: var(--card); display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--hair); }
+  .swatch .meta .role { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); }
+  .swatch .meta .desc { font-size: 12.5px; color: var(--ink2); line-height: 1.45; }
+
+  /* type spec */
+  .typespec { padding: 28px 32px; border: 1px solid var(--hair); border-radius: 10px; background: var(--card); }
+  .typespec .tag { display: flex; gap: 14px; align-items: baseline; }
+  .typespec .sample { margin-top: 18px; color: var(--ink); }
+  .typespec .specs { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--hair2); display: flex; gap: 32px; }
+  .typespec .specs > div { display: flex; flex-direction: column; gap: 3px; }
+  .typespec .specs strong { font-size: 13px; }
+
+  /* scale ladder */
+  .scale-row { display: grid; grid-template-columns: 80px 1fr 200px; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--hair2); align-items: baseline; }
+  .scale-row:last-child { border-bottom: none; }
+  .scale-row .role { font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); }
+  .scale-row .specs { font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--ink3); }
+
+  /* tactical pill */
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--hair); background: var(--card); color: var(--ink2); font-weight: 500; }
+  .pill.ember { background: var(--emberBg); color: var(--emberD); border-color: var(--emberL); }
+  .pill.solid { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+  .pill.moss { background: var(--mossBg); color: var(--moss); border-color: var(--mossL); }
+
+  /* do-don't */
+  .gate { padding: 22px; border-radius: 10px; border: 1px solid var(--hair); background: var(--card); position: relative; }
+  .gate.ok { border-color: var(--mossL); background: var(--mossBg); }
+  .gate.no { border-color: #d8a899; background: #fbe9e2; }
+  .gate .gate-tag { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+  .gate.ok .gate-tag { color: var(--moss); }
+  .gate.no .gate-tag { color: var(--rust); }
+  .gate .preview { height: 120px; background: var(--card); border: 1px solid var(--hair); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-top: 12px; }
+  .gate p { font-size: 12.5px; line-height: 1.5; margin: 12px 0 0 0; color: var(--ink2); }
+
+  /* stat tile */
+  .stat-tile { padding: 22px 26px; border-radius: 10px; }
+  .stat-tile .k { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+  .stat-tile .v { font-family: 'Geist Mono', monospace; font-size: 36px; font-weight: 600; letter-spacing: -.02em; margin-top: 6px; }
+
+  /* bottom contract block */
+  .contract { margin-top: 64px; padding: 40px 48px; background: var(--ink); color: var(--bone); border-radius: 12px; display: flex; align-items: center; gap: 32px; }
+  .contract .cnum { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-size: 80px; color: var(--emberL); line-height: 1; }
+  .contract p { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-size: 22px; line-height: 1.4; margin: 0; flex: 1; }
+  .contract .stamp { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink4); align-self: flex-end; }
+</style>
+</head>
+<body>
+<main>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="kicker"><span class="dot"></span><span>BRAND KIT · v1.0 · 2026</span></div>
+  <h1>The contract,<br>made <em>visible</em>.</h1>
+  <p class="lede">LEVEL is a 90-day self-accountability system. The brand stands for the same thing the product does — quiet rigor, lock-it-in seriousness, and the discipline of a training journal you do not negotiate with. This document is the canon.</p>
+  <div class="meta">
+    <div><span class="label">Mark</span><strong>Offset Squares</strong></div>
+    <div><span class="label">Wordmark</span><strong>Inter Black · all caps</strong></div>
+    <div><span class="label">Display</span><strong>Instrument Serif italic</strong></div>
+    <div><span class="label">Tactical</span><strong>Geist Mono</strong></div>
+    <div><span class="label">Accent</span><strong>Ember · #C4622D</strong></div>
+  </div>
+</section>
+
+<!-- 01 LOGO -->
+<section>
+  <div class="section-head">
+    <div class="num">01</div>
+    <div>
+      <h2>The mark.</h2>
+      <p class="eyebrow">Offset Squares · Wordmark · Lockups</p>
+      <p class="sub">Three squares climbing diagonally with depth via opacity. Reads as ascent without a chart trope, and as composition rather than a chart at any size. The wordmark is Inter Black, tracked tight, all caps. They sit on a single baseline.</p>
+    </div>
+  </div>
+
+  <!-- glyph deconstruction -->
+  <div class="grid-3" style="margin-bottom:16px">
+    <div class="card" style="padding:0; aspect-ratio: 4/3; display:flex; align-items:center; justify-content:center; background:var(--bone)">
+      <svg width="220" height="220" viewBox="0 0 32 32">
+        <rect x="3"  y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" />
+        <rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" />
+        <rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" />
+      </svg>
+    </div>
+    <div class="card" style="padding:0; aspect-ratio: 4/3; display:flex; align-items:center; justify-content:center; background:var(--ink)">
+      <svg width="220" height="220" viewBox="0 0 32 32">
+        <rect x="3"  y="20" width="9" height="9" rx="1.5" fill="#faf5e8" opacity="0.4" />
+        <rect x="10" y="13" width="9" height="9" rx="1.5" fill="#faf5e8" opacity="0.7" />
+        <rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#faf5e8" />
+      </svg>
+    </div>
+    <div class="card" style="padding:0; aspect-ratio: 4/3; display:flex; align-items:center; justify-content:center; background:var(--ember)">
+      <svg width="220" height="220" viewBox="0 0 32 32">
+        <rect x="3"  y="20" width="9" height="9" rx="1.5" fill="#fff" opacity="0.4" />
+        <rect x="10" y="13" width="9" height="9" rx="1.5" fill="#fff" opacity="0.7" />
+        <rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#fff" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- lockups -->
+  <div class="lockup-row">
+    <div class="lockup paper">
+      <div style="display:inline-flex; align-items:center; gap:14px;">
+        <svg width="44" height="44" viewBox="0 0 32 32">
+          <rect x="3"  y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" />
+          <rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" />
+          <rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" />
+        </svg>
+        <span style="font-family:'Inter'; font-weight:900; font-size:42px; letter-spacing:.005em; color:#161311;">LEVEL</span>
+      </div>
+      <div class="stamp">PRIMARY · ON PAPER</div>
+    </div>
+    <div class="lockup ink">
+      <div style="display:inline-flex; align-items:center; gap:14px;">
+        <svg width="44" height="44" viewBox="0 0 32 32">
+          <rect x="3"  y="20" width="9" height="9" rx="1.5" fill="#faf5e8" opacity="0.4" />
+          <rect x="10" y="13" width="9" height="9" rx="1.5" fill="#faf5e8" opacity="0.7" />
+          <rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#faf5e8" />
+        </svg>
+        <span style="font-family:'Inter'; font-weight:900; font-size:42px; letter-spacing:.005em; color:#faf5e8;">LEVEL</span>
+      </div>
+      <div class="stamp">INVERTED · ON INK</div>
+    </div>
+    <div class="lockup ember">
+      <div style="display:inline-flex; align-items:center; gap:14px;">
+        <svg width="44" height="44" viewBox="0 0 32 32">
+          <rect x="3"  y="20" width="9" height="9" rx="1.5" fill="#fff" opacity="0.4" />
+          <rect x="10" y="13" width="9" height="9" rx="1.5" fill="#fff" opacity="0.7" />
+          <rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#fff" />
+        </svg>
+        <span style="font-family:'Inter'; font-weight:900; font-size:42px; letter-spacing:.005em; color:#fff;">LEVEL</span>
+      </div>
+      <div class="stamp">ACCENT · ON EMBER</div>
+    </div>
+  </div>
+
+  <!-- tile + wordmark only + clearspace -->
+  <div class="lockup-row" style="margin-top:16px">
+    <div class="lockup tile ink">
+      <svg width="120" height="120" viewBox="0 0 32 32">
+        <rect x="3"  y="20" width="9" height="9" rx="1.5" fill="#faf5e8" opacity="0.4" />
+        <rect x="10" y="13" width="9" height="9" rx="1.5" fill="#faf5e8" opacity="0.7" />
+        <rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#faf5e8" />
+      </svg>
+      <div class="stamp">APP TILE · 1024 × 1024</div>
+    </div>
+    <div class="lockup tile bone">
+      <svg width="120" height="120" viewBox="0 0 32 32">
+        <rect x="3"  y="20" width="9" height="9" rx="1.5" fill="#c4622d" opacity="0.4" />
+        <rect x="10" y="13" width="9" height="9" rx="1.5" fill="#c4622d" opacity="0.7" />
+        <rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#c4622d" />
+      </svg>
+      <div class="stamp">FAVICON · EMBER ON BONE</div>
+    </div>
+    <div class="lockup paper">
+      <span style="font-family:'Inter'; font-weight:900; font-size:64px; letter-spacing:.005em; color:#161311;">LEVEL</span>
+      <div class="stamp">WORDMARK ONLY</div>
+    </div>
+    <div class="lockup paper" style="position:relative;">
+      <div style="display:inline-flex; align-items:center; gap:14px; position:relative; padding:30px;">
+        <div style="position:absolute; inset:0; border:1px dashed #c4622d; border-radius:6px; opacity:.6"></div>
+        <svg width="44" height="44" viewBox="0 0 32 32">
+          <rect x="3"  y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" />
+          <rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" />
+          <rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" />
+        </svg>
+        <span style="font-family:'Inter'; font-weight:900; font-size:42px; letter-spacing:.005em; color:#161311;">LEVEL</span>
+      </div>
+      <div class="stamp">CLEAR-SPACE · 30PX MIN ALL SIDES</div>
+    </div>
+  </div>
+
+  <!-- size scale -->
+  <div class="card" style="margin-top:16px; padding:32px;">
+    <div class="label" style="margin-bottom:18px">SIZE SCALE · MARK ALONE</div>
+    <div style="display:flex; align-items:flex-end; gap:32px;">
+      <svg width="16" height="16" viewBox="0 0 32 32"><rect x="3" y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" /><rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" /><rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" /></svg>
+      <svg width="24" height="24" viewBox="0 0 32 32"><rect x="3" y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" /><rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" /><rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" /></svg>
+      <svg width="40" height="40" viewBox="0 0 32 32"><rect x="3" y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" /><rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" /><rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" /></svg>
+      <svg width="64" height="64" viewBox="0 0 32 32"><rect x="3" y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" /><rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" /><rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" /></svg>
+      <svg width="100" height="100" viewBox="0 0 32 32"><rect x="3" y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" /><rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" /><rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" /></svg>
+      <svg width="160" height="160" viewBox="0 0 32 32"><rect x="3" y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" /><rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" /><rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" /></svg>
+    </div>
+    <div style="display:flex; gap:32px; margin-top:14px;">
+      <span class="mono" style="font-size:11px; color:var(--ink3); width:16px; text-align:center;">16</span>
+      <span class="mono" style="font-size:11px; color:var(--ink3); width:24px; text-align:center;">24</span>
+      <span class="mono" style="font-size:11px; color:var(--ink3); width:40px; text-align:center;">40</span>
+      <span class="mono" style="font-size:11px; color:var(--ink3); width:64px; text-align:center;">64</span>
+      <span class="mono" style="font-size:11px; color:var(--ink3); width:100px; text-align:center;">100</span>
+      <span class="mono" style="font-size:11px; color:var(--ink3); width:160px; text-align:center;">160</span>
+    </div>
+    <p style="font-size:13px; color:var(--ink2); line-height:1.55; margin-top:24px; max-width:760px;">
+      The mark is legible at 16px because the squares retain rectangular silhouette without depending on stroke width. Below 16px, drop the lockup and use the favicon variant on bone. Never composite the wordmark below 14px caps height.
+    </p>
+  </div>
+
+  <!-- do / don't -->
+  <div class="grid-4" style="margin-top:16px;">
+    <div class="gate ok">
+      <div class="gate-tag">✓ DO · MONO</div>
+      <div class="preview">
+        <svg width="48" height="48" viewBox="0 0 32 32"><rect x="3" y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" /><rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" /><rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" /></svg>
+      </div>
+      <p>Single colour, ink or bone. Opacity ramp 0.4 / 0.7 / 1.0 stays intact.</p>
+    </div>
+    <div class="gate no">
+      <div class="gate-tag">✗ DON'T · GRADIENT</div>
+      <div class="preview">
+        <svg width="48" height="48" viewBox="0 0 32 32"><defs><linearGradient id="bad1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4622d"/><stop offset="1" stop-color="#3d5341"/></linearGradient></defs><rect x="3" y="20" width="9" height="9" rx="1.5" fill="url(#bad1)" /><rect x="10" y="13" width="9" height="9" rx="1.5" fill="url(#bad1)" /><rect x="17" y="6"  width="9" height="9" rx="1.5" fill="url(#bad1)" /></svg>
+      </div>
+      <p>No gradients, ever. The mark is composed of solid forms.</p>
+    </div>
+    <div class="gate no">
+      <div class="gate-tag">✗ DON'T · ROTATE</div>
+      <div class="preview">
+        <svg width="48" height="48" viewBox="0 0 32 32" style="transform:rotate(22deg)"><rect x="3" y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" /><rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" /><rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" /></svg>
+      </div>
+      <p>Never rotate. The diagonal ascent is the mark — re-angling kills it.</p>
+    </div>
+    <div class="gate no">
+      <div class="gate-tag">✗ DON'T · STRETCH</div>
+      <div class="preview">
+        <svg width="80" height="40" viewBox="0 0 32 32" preserveAspectRatio="none"><rect x="3" y="20" width="9" height="9" rx="1.5" fill="#161311" opacity="0.4" /><rect x="10" y="13" width="9" height="9" rx="1.5" fill="#161311" opacity="0.7" /><rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#161311" /></svg>
+      </div>
+      <p>Lock aspect ratio. Squares must remain square at every scale.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02 COLOR -->
+<section>
+  <div class="section-head">
+    <div class="num">02</div>
+    <div>
+      <h2>Colour.</h2>
+      <p class="eyebrow">Paper · Ink · Ember · Moss</p>
+      <p class="sub">A four-colour system on warm linen. Ember is the only accent — used for state (qualifying, claimed, attention). Moss is for met conditions only. Never mix Ember and Moss in the same composition without a clear semantic reason.</p>
+    </div>
+  </div>
+
+  <!-- primary core -->
+  <p class="label" style="margin-bottom:14px;">Core · used everywhere</p>
+  <div class="grid-4">
+    <div class="swatch">
+      <div class="chip" style="background:#f5f1e8; color:#161311">
+        <span class="chip-name">Paper</span>
+        <span class="chip-hex">#F5F1E8 · 245 241 232</span>
+      </div>
+      <div class="meta"><span class="role">Surface · base</span><span class="desc">Warm linen. Default page background. Never pure white.</span></div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#161311; color:#faf5e8">
+        <span class="chip-name">Ink</span>
+        <span class="chip-hex">#161311 · 22 19 17</span>
+      </div>
+      <div class="meta"><span class="role">Text · structure</span><span class="desc">Near-black with warm bias. All body type and structural ink.</span></div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#c4622d; color:#fff">
+        <span class="chip-name">Ember</span>
+        <span class="chip-hex">#C4622D · 196 98 45</span>
+      </div>
+      <div class="meta"><span class="role">Accent · state</span><span class="desc">Qualifying, claimed, primary CTA. Used sparingly — earns its weight.</span></div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#3d5341; color:#e3eadf">
+        <span class="chip-name">Moss</span>
+        <span class="chip-hex">#3D5341 · 61 83 65</span>
+      </div>
+      <div class="meta"><span class="role">Met · success</span><span class="desc">Day qualified, target hit, threshold met. Quiet not loud.</span></div>
+    </div>
+  </div>
+
+  <!-- supporting -->
+  <p class="label" style="margin:32px 0 14px 0;">Supporting · structural</p>
+  <div class="grid-5">
+    <div class="swatch">
+      <div class="chip" style="background:#fbf8f1; color:#3a342d; height:120px">
+        <span style="font-family:'Inter'; font-weight:600; font-size:14px;">Card</span>
+        <span class="chip-hex">#FBF8F1</span>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#faf5e8; color:#3a342d; height:120px">
+        <span style="font-family:'Inter'; font-weight:600; font-size:14px;">Bone</span>
+        <span class="chip-hex">#FAF5E8</span>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#dcd2bf; color:#3a342d; height:120px">
+        <span style="font-family:'Inter'; font-weight:600; font-size:14px;">Hairline</span>
+        <span class="chip-hex">#DCD2BF</span>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#6b6259; color:#fff; height:120px">
+        <span style="font-family:'Inter'; font-weight:600; font-size:14px;">Ink-3</span>
+        <span class="chip-hex">#6B6259</span>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#9c9489; color:#fff; height:120px">
+        <span style="font-family:'Inter'; font-weight:600; font-size:14px;">Ink-4</span>
+        <span class="chip-hex">#9C9489</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- semantic + alarm -->
+  <p class="label" style="margin:32px 0 14px 0;">Semantic · state tints &amp; alarm</p>
+  <div class="grid-5">
+    <div class="swatch">
+      <div class="chip" style="background:#fbeadb; color:#a04e1f; height:120px">
+        <span style="font-family:'Inter'; font-weight:600; font-size:14px;">Ember-Bg</span>
+        <span class="chip-hex">#FBEADB</span>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#e8a26b; color:#5b2810; height:120px">
+        <span style="font-family:'Inter'; font-weight:600; font-size:14px;">Ember-L</span>
+        <span class="chip-hex">#E8A26B</span>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#e3eadf; color:#3d5341; height:120px">
+        <span style="font-family:'Inter'; font-weight:600; font-size:14px;">Moss-Bg</span>
+        <span class="chip-hex">#E3EADF</span>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#7c9377; color:#fff; height:120px">
+        <span style="font-family:'Inter'; font-weight:600; font-size:14px;">Moss-L</span>
+        <span class="chip-hex">#7C9377</span>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#8a3a1f; color:#fff; height:120px">
+        <span style="font-family:'Inter'; font-weight:600; font-size:14px;">Rust</span>
+        <span class="chip-hex">#8A3A1F</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- usage ratio -->
+  <div class="card" style="margin-top:32px; padding:32px;">
+    <div class="label" style="margin-bottom:18px;">USAGE RATIO · ANY GIVEN SCREEN</div>
+    <div style="display:flex; height:60px; border-radius:6px; overflow:hidden;">
+      <div style="flex:60; background:#f5f1e8; display:flex; align-items:center; justify-content:center; font-family:'Geist Mono'; font-size:11px; color:#3a342d;">PAPER · 60%</div>
+      <div style="flex:25; background:#161311; display:flex; align-items:center; justify-content:center; font-family:'Geist Mono'; font-size:11px; color:#faf5e8;">INK · 25%</div>
+      <div style="flex:10; background:#fbf8f1; display:flex; align-items:center; justify-content:center; font-family:'Geist Mono'; font-size:10px; color:#6b6259; border-left:1px solid #dcd2bf;">CARD · 10%</div>
+      <div style="flex:5; background:#c4622d; display:flex; align-items:center; justify-content:center; font-family:'Geist Mono'; font-size:11px; color:#fff;">EMBER · 5%</div>
+    </div>
+    <p style="font-size:13px; color:var(--ink2); line-height:1.55; margin:18px 0 0 0; max-width:760px;">
+      Ember is rationed. If a screen is more than 5% Ember it has stopped meaning anything. Save it for the contract bar, the qualifying state, the claimed reward, and the primary action.
+    </p>
+  </div>
+</section>
+
+<!-- 03 TYPE -->
+<section>
+  <div class="section-head">
+    <div class="num">03</div>
+    <div>
+      <h2>Type.</h2>
+      <p class="eyebrow">Display · UI · Tactical</p>
+      <p class="sub">Three families, one job each. Instrument Serif italic carries the voice — a training-journal hand. Inter does the structural UI work in 400/500/600/900. Geist Mono carries every number, label, and tactical readout — the contract typed up.</p>
+    </div>
+  </div>
+
+  <!-- specimen -->
+  <div style="display:flex; flex-direction:column; gap:16px;">
+    <div class="typespec">
+      <div class="tag"><span class="pill">DISPLAY</span><span class="label">Instrument Serif · italic 400</span></div>
+      <div class="sample serif" style="font-size:88px; line-height:0.98; font-style:italic; letter-spacing:-.02em;">
+        <em>Two cores left.</em>
+      </div>
+      <div class="specs">
+        <div><span class="label">USE</span><strong>Hero, page titles, pulled quotes</strong></div>
+        <div><span class="label">FALLBACK</span><strong>Georgia, serif</strong></div>
+        <div><span class="label">VOICE</span><strong>Training journal · quiet rigor</strong></div>
+      </div>
+    </div>
+
+    <div class="typespec">
+      <div class="tag"><span class="pill solid">UI</span><span class="label">Inter · 400 / 500 / 600 / 900</span></div>
+      <div class="sample" style="font-size:18px; line-height:1.55; font-weight:400;">
+        Cores are binary. You either did them, or you didn't. Once signed, they are locked for 90 days — you cannot change targets, cannot remove a core, cannot reduce a schedule.
+      </div>
+      <div class="specs">
+        <div><span class="label">USE</span><strong>Body, buttons, labels, navigation</strong></div>
+        <div><span class="label">SMOOTHING</span><strong>antialiased, ss01 cv11</strong></div>
+        <div><span class="label">WORDMARK</span><strong>900 · all caps · letter-spacing 0.005em</strong></div>
+      </div>
+    </div>
+
+    <div class="typespec" style="background:var(--ink); color:var(--bone); border-color:var(--ink);">
+      <div class="tag">
+        <span class="pill ember">TACTICAL</span>
+        <span class="label" style="color:#9c9489;">Geist Mono · 400 / 500 / 600</span>
+      </div>
+      <div class="sample mono" style="font-size:36px; font-weight:600; letter-spacing:-.02em; color:#faf5e8;">
+        DAY 24 / 90 · 13 / 18 · LV 07
+      </div>
+      <div class="specs" style="border-top-color:#3a342d;">
+        <div><span class="label" style="color:#9c9489;">USE</span><strong style="color:#faf5e8;">Numbers, eyebrows, tactical readouts, IDs</strong></div>
+        <div><span class="label" style="color:#9c9489;">FEATURE</span><strong style="color:#faf5e8;">Tabular numerals always on</strong></div>
+        <div><span class="label" style="color:#9c9489;">VOICE</span><strong style="color:#faf5e8;">Receipt · ledger · contract</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- scale -->
+  <div class="card" style="margin-top:32px; padding:36px 40px;">
+    <div class="label" style="margin-bottom:14px;">SCALE LADDER</div>
+    <div class="scale-row" style="grid-template-columns: 80px 1fr 220px;">
+      <span class="role">H1</span>
+      <span class="serif" style="font-size:64px; font-style:italic; line-height:1;">Ninety days.</span>
+      <span class="specs">Instrument Serif · 64px / 0.98 / -.02em</span>
+    </div>
+    <div class="scale-row" style="grid-template-columns: 80px 1fr 220px;">
+      <span class="role">H2</span>
+      <span class="serif" style="font-size:32px; font-style:italic; line-height:1.1;">Today's contract</span>
+      <span class="specs">Instrument Serif · 32px / 1.1 / -.012em</span>
+    </div>
+    <div class="scale-row" style="grid-template-columns: 80px 1fr 220px;">
+      <span class="role">H3</span>
+      <span style="font-family:'Inter'; font-size:16px; font-weight:600;">Two cores left to close</span>
+      <span class="specs">Inter 600 · 16px / 1.3</span>
+    </div>
+    <div class="scale-row" style="grid-template-columns: 80px 1fr 220px;">
+      <span class="role">BODY</span>
+      <span style="font-family:'Inter'; font-size:13px; line-height:1.55; color:var(--ink2);">Cores are binary. You either did them, or you didn't.</span>
+      <span class="specs">Inter 400 · 13px / 1.55</span>
+    </div>
+    <div class="scale-row" style="grid-template-columns: 80px 1fr 220px;">
+      <span class="role">EYEBROW</span>
+      <span class="mono" style="font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink3);">CHARACTER · ARCHETYPE</span>
+      <span class="specs">Geist Mono · 11px / .18em / uppercase</span>
+    </div>
+    <div class="scale-row" style="grid-template-columns: 80px 1fr 220px;">
+      <span class="role">NUMBER</span>
+      <span class="mono" style="font-size:48px; font-weight:600; letter-spacing:-.03em;">2,950</span>
+      <span class="specs">Geist Mono 600 · tabular</span>
+    </div>
+    <div class="scale-row" style="grid-template-columns: 80px 1fr 220px;">
+      <span class="role">MICRO</span>
+      <span class="mono" style="font-size:10px; color:var(--ink3);">SIGNED · 21 DEC 2025 · 14:32</span>
+      <span class="specs">Geist Mono · 10px / .04em</span>
+    </div>
+  </div>
+</section>
+
+<!-- 04 COMPONENTS -->
+<section>
+  <div class="section-head">
+    <div class="num">04</div>
+    <div>
+      <h2>Components.</h2>
+      <p class="eyebrow">Pills · Tags · Buttons · Cards · Chain</p>
+      <p class="sub">A small kit, used consistently. Components inherit from colour and type — no novel decoration.</p>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap:16px;">
+    <div class="card" style="padding:32px;">
+      <div class="label">PILLS</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;">
+        <span class="pill">⏱ 35 MIN</span>
+        <span class="pill solid">DAILY</span>
+        <span class="pill ember"><span style="width:6px; height:6px; border-radius:50%; background:#c4622d;"></span>QUALIFYING</span>
+        <span class="pill moss">MET</span>
+        <span class="pill" style="border-style:dashed">FUTURE</span>
+      </div>
+      <div class="label" style="margin-top:28px;">TAGS</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;">
+        <span style="display:inline-flex; align-items:center; font-family:'Geist Mono'; font-size:9px; letter-spacing:.14em; text-transform:uppercase; padding:3px 7px; background:#161311; color:#faf5e8; border-radius:4px; font-weight:600;">SELECTED</span>
+        <span style="display:inline-flex; align-items:center; font-family:'Geist Mono'; font-size:9px; letter-spacing:.14em; text-transform:uppercase; padding:3px 7px; background:transparent; color:#161311; border:1px solid #161311; border-radius:4px; font-weight:600;">DAY 30</span>
+        <span style="display:inline-flex; align-items:center; font-family:'Geist Mono'; font-size:9px; letter-spacing:.14em; text-transform:uppercase; padding:3px 7px; background:#c4622d; color:#fff; border-radius:4px; font-weight:600;">CLAIMED</span>
+        <span style="display:inline-flex; align-items:center; font-family:'Geist Mono'; font-size:9px; letter-spacing:.14em; text-transform:uppercase; padding:3px 7px; background:#3d5341; color:#fff; border-radius:4px; font-weight:600;">EQUIPPED</span>
+      </div>
+    </div>
+
+    <div class="card" style="padding:32px;">
+      <div class="label">BUTTONS</div>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;">
+        <button style="display:inline-flex; align-items:center; gap:8px; padding:11px 18px; border:1px solid #c4622d; background:#c4622d; color:#fff; border-radius:7px; font-family:'Inter'; font-size:13px; font-weight:500; box-shadow:0 1px 0 #a04e1f, 0 4px 12px rgba(196,98,45,.25); cursor:pointer;">▶ Sign &amp; begin</button>
+        <button style="display:inline-flex; align-items:center; gap:8px; padding:11px 18px; border:1px solid #161311; background:#161311; color:#faf5e8; border-radius:7px; font-family:'Inter'; font-size:13px; font-weight:500; cursor:pointer;">Mark complete</button>
+        <button style="display:inline-flex; align-items:center; gap:8px; padding:11px 18px; border:1px solid #161311; background:#fbf8f1; color:#161311; border-radius:7px; font-family:'Inter'; font-size:13px; font-weight:500; cursor:pointer;">Edit</button>
+        <button style="display:inline-flex; align-items:center; gap:8px; padding:11px 18px; border:1px solid #dcd2bf; background:#fbf8f1; color:#3a342d; border-radius:7px; font-family:'Inter'; font-size:13px; font-weight:500; cursor:pointer;">Cancel</button>
+      </div>
+      <div class="label" style="margin-top:28px;">CHECKBOX · BINARY</div>
+      <div style="display:flex; gap:14px; margin-top:16px; align-items:center;">
+        <span style="width:22px; height:22px; border:1.5px solid #6b6259; background:#fbf8f1; border-radius:6px; display:inline-flex; opacity:.6;"></span>
+        <span style="width:22px; height:22px; border:1.5px solid #161311; background:#fbf8f1; border-radius:6px; display:inline-flex;"></span>
+        <span style="width:22px; height:22px; border:1.5px solid #c4622d; background:#c4622d; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:12px; box-shadow:0 0 0 4px #fbeadb;">✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- chain visualization -->
+  <div class="card" style="margin-top:16px; padding:32px;">
+    <div class="label" style="margin-bottom:6px;">CHAIN · 18-DAY REWARD WINDOW</div>
+    <p style="font-size:13px; color:var(--ink2); line-height:1.55; max-width:680px; margin:0 0 18px 0;">
+      The signature visualisation. Each cell is one day. <strong>Filled ember</strong> means qualified, <strong>outline</strong> means missed, <strong>dashed</strong> means future. The "now" cell is double-ringed in ember.
+    </p>
+    <div style="display:grid; grid-template-columns:repeat(18, 1fr); gap:6px;">
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#fbf8f1; border:1.5px solid #6b6259; display:flex; align-items:center; justify-content:center; color:#6b6259; font-family:'Geist Mono'; font-size:10px; font-weight:700;">×</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#fbf8f1; border:1.5px solid #6b6259; display:flex; align-items:center; justify-content:center; color:#6b6259; font-family:'Geist Mono'; font-size:10px; font-weight:700;">×</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#c4622d; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Geist Mono'; font-size:10px; font-weight:700;">✓</div>
+      <div style="height:36px; border-radius:5px; background:#fbf8f1; border:2px solid #161311; box-shadow:0 0 0 4px #f5f1e8, 0 0 0 5px #c4622d; display:flex; align-items:center; justify-content:center; font-family:'Geist Mono'; font-size:8px; font-weight:700;">NOW</div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 VOICE -->
+<section>
+  <div class="section-head">
+    <div class="num">05</div>
+    <div>
+      <h2>Voice.</h2>
+      <p class="eyebrow">How the system speaks</p>
+      <p class="sub">LEVEL is not a coach, not a cheerleader, not a buddy. It is the contract you signed with yourself, written in the second person. Brief. Quiet. Demanding. Never sentimental.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="gate ok">
+      <div class="gate-tag">✓ ON BRAND</div>
+      <div style="background:#fbf8f1; border:1px solid #dcd2bf; border-radius:8px; padding:20px; margin-top:14px;">
+        <p class="serif" style="font-style:italic; font-size:24px; line-height:1.3; color:var(--ink); margin:0;">"Two cores left. The day qualifies when all three close."</p>
+      </div>
+      <p>Stated. Specific. The verb does the work.</p>
+    </div>
+    <div class="gate no">
+      <div class="gate-tag">✗ OFF BRAND</div>
+      <div style="background:#fbf8f1; border:1px solid #dcd2bf; border-radius:8px; padding:20px; margin-top:14px;">
+        <p style="font-size:18px; line-height:1.4; color:var(--ink); margin:0;">"Great job so far! 🔥 You've got this — just two more cores to crush today!"</p>
+      </div>
+      <p>Praise, exclamation, emoji. None of the above.</p>
+    </div>
+    <div class="gate ok">
+      <div class="gate-tag">✓ ON BRAND</div>
+      <div style="background:#fbf8f1; border:1px solid #dcd2bf; border-radius:8px; padding:20px; margin-top:14px;">
+        <p class="serif" style="font-style:italic; font-size:22px; line-height:1.3; color:var(--ink); margin:0;">"Write something true. Lazy reasons survive the form, but rarely survive themselves."</p>
+      </div>
+      <p>Confronts the user. The contract talking, not a chatbot.</p>
+    </div>
+    <div class="gate no">
+      <div class="gate-tag">✗ OFF BRAND</div>
+      <div style="background:#fbf8f1; border:1px solid #dcd2bf; border-radius:8px; padding:20px; margin-top:14px;">
+        <p style="font-size:18px; line-height:1.4; color:var(--ink); margin:0;">"No worries! Life happens. Tell us why so we can help adjust your plan ✨"</p>
+      </div>
+      <p>Permissive, soft, reframes a contract as a feedback form.</p>
+    </div>
+  </div>
+
+  <!-- vocabulary -->
+  <div class="card" style="margin-top:16px; padding:32px;">
+    <div class="label" style="margin-bottom:18px;">VOCABULARY</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--hair); border-radius:8px; overflow:hidden;">
+      <div style="padding:14px 18px; background:var(--bone); font-family:'Geist Mono'; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--moss); border-bottom:1px solid var(--hair); border-right:1px solid var(--hair);">USE</div>
+      <div style="padding:14px 18px; background:var(--bone); font-family:'Geist Mono'; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--rust); border-bottom:1px solid var(--hair);">DON'T USE</div>
+      <div style="padding:14px 18px; font-size:13.5px; border-right:1px solid var(--hair); border-bottom:1px solid var(--hair2);"><strong>Cores</strong> · <strong>Optionals</strong> · <strong>The contract</strong></div>
+      <div style="padding:14px 18px; font-size:13.5px; color:var(--ink3); border-bottom:1px solid var(--hair2);">Habits · tasks · goals · checklist</div>
+      <div style="padding:14px 18px; font-size:13.5px; border-right:1px solid var(--hair); border-bottom:1px solid var(--hair2);"><strong>Qualified</strong> · <strong>Met</strong> · <strong>Closed</strong></div>
+      <div style="padding:14px 18px; font-size:13.5px; color:var(--ink3); border-bottom:1px solid var(--hair2);">Completed · finished · achieved · won</div>
+      <div style="padding:14px 18px; font-size:13.5px; border-right:1px solid var(--hair); border-bottom:1px solid var(--hair2);"><strong>Run</strong> · <strong>Window</strong> · <strong>Day 91</strong></div>
+      <div style="padding:14px 18px; font-size:13.5px; color:var(--ink3); border-bottom:1px solid var(--hair2);">Journey · streak · season</div>
+      <div style="padding:14px 18px; font-size:13.5px; border-right:1px solid var(--hair); border-bottom:1px solid var(--hair2);"><strong>Reason</strong> · <strong>Sign</strong> · <strong>Lock</strong></div>
+      <div style="padding:14px 18px; font-size:13.5px; color:var(--ink3); border-bottom:1px solid var(--hair2);">Excuse · commit · enable</div>
+      <div style="padding:14px 18px; font-size:13.5px; border-right:1px solid var(--hair);"><strong>Two cores left.</strong> · <strong>Skip with reason →</strong></div>
+      <div style="padding:14px 18px; font-size:13.5px; color:var(--ink3);">Almost there! · Tell us how you're feeling 💭</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTRACT FOOTER -->
+<div class="contract">
+  <div class="cnum">§</div>
+  <p>"This kit is the contract. Cores, colour, type, and voice are locked. Variations are not creative latitude — they are decay."</p>
+  <span class="stamp">LEVEL · BRAND KIT v1.0 · LOCKED 2026</span>
+</div>
+
+</main>
+</body>
+</html>

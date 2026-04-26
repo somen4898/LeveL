@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LeveL — Wireframes & Lo-Fi</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #f0eee9; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  #root { height: 100%; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="brand/level-mark.jsx"></script>
+<script type="text/babel" src="wf/wf-primitives.jsx"></script>
+<script type="text/babel" src="wf/wf-onboarding.jsx"></script>
+<script type="text/babel" src="wf/wf-today.jsx"></script>
+<script type="text/babel" src="wf/wf-rest.jsx"></script>
+<script type="text/babel" src="lf/lf-primitives.jsx"></script>
+<script type="text/babel" src="lf/lf-screens-a.jsx"></script>
+<script type="text/babel" src="lf/lf-screens-b.jsx"></script>
+<script type="text/babel" src="hf/hf-primitives.jsx"></script>
+<script type="text/babel" src="hf/hf-screens-a.jsx"></script>
+<script type="text/babel" src="hf/hf-screens-b.jsx"></script>
+<script type="text/babel" src="hf/hf-screens-c.jsx"></script>
+<script type="text/babel">
+  function BrandStrip() {
+    const variants = [
+      { key: 'iso-stairs', name: 'Isometric Stairs', desc: '3-step staircase in axonometric. Reads as a real object — architectural, not a chart.' },
+      { key: 'stair-l',    name: 'Stair Monogram L', desc: 'A capital L formed by ascending steps. Subtle wordmark connection.' },
+      { key: 'chevron',    name: 'Notched Chevron',  desc: 'Stepped-arrow ascent. Decisive — reads as level-up.' },
+      { key: 'squares',    name: 'Offset Squares',   desc: 'Three squares climbing diagonally with depth via opacity.' },
+      { key: 'bars',       name: 'Bars (current)',   desc: 'Original — kept for comparison.' },
+    ];
+    const eyebrow = { fontFamily: "'Geist Mono',monospace", fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: '#6b6259' };
+    return (
+      <div style={{ height: '100%', background: '#f6f3ec', padding: 28, fontFamily: "'Inter',system-ui,sans-serif", color: '#1a1714', overflow: 'auto', boxSizing: 'border-box' }}>
+        <div style={eyebrow}>Brand · Mark explorations</div>
+        <div style={{ fontFamily: "'Instrument Serif',Georgia,serif", fontSize: 30, marginTop: 6 }}>Five glyph directions for LEVEL.</div>
+        <p style={{ fontSize: 12.5, lineHeight: 1.55, color: '#3a342d', maxWidth: 760, marginTop: 8 }}>
+          The wordmark stays the same — bold INTER, all caps. The glyph is what changes. Each is minimal but more crafted than a plain bar-chart. Pick one and I'll roll it through every surface in hi-fi.
+        </p>
+
+        <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12 }}>
+          {variants.map(v => (
+            <div key={v.key} style={{ background: '#fff', border: '1px solid #cfc6b8', borderRadius: 10, padding: 18, display: 'flex', flexDirection: 'column' }}>
+              <div style={{ height: 72, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid #e7dfd1' }}>
+                <StepsMark size={48} variant={v.key} color="#1a1714" />
+              </div>
+              <div style={{ height: 68, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid #e7dfd1' }}>
+                <LevelMark size={20} variant={v.key} />
+              </div>
+              <div style={{ height: 76, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1a1714' }}>
+                <LevelIcon size={56} variant={v.key} />
+              </div>
+              <div style={{ padding: '12px 2px 0' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#1a1714' }}>{v.name}</div>
+                <div style={{ ...eyebrow, marginTop: 3, color: '#9c9489', fontSize: 9 }}>{v.key}</div>
+                <div style={{ fontSize: 11, lineHeight: 1.45, color: '#6b6259', marginTop: 6 }}>{v.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop: 24, ...eyebrow }}>Scale test · current default ({BRAND_GLYPH})</div>
+        <div style={{ marginTop: 12, display: 'flex', gap: 18, alignItems: 'center', background: '#fff', border: '1px solid #cfc6b8', borderRadius: 10, padding: 22 }}>
+          <LevelIcon size={16} />
+          <LevelIcon size={24} />
+          <LevelIcon size={36} />
+          <LevelIcon size={56} />
+          <LevelIcon size={88} />
+          <div style={{ flex: 1 }}></div>
+          <LevelMark size={14} />
+          <LevelMark size={20} />
+          <LevelMark size={28} />
+        </div>
+      </div>
+    );
+  }
+
+  function App() {
+    return (
+      <DesignCanvas>
+        <DCSection id="brand" title="LeveL · Brand mark" subtitle="Wordmark + steps glyph. Used across all surfaces in the lo-fi pass.">
+          <DCArtboard id="brand-strip" label="Wordmark + 5 glyph directions" width={1320} height={620}>
+            <BrandStrip />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="hifi" title="LeveL · Stage 3 — Hi-Fi" subtitle="LEVEL as a 90-day self-accountability contract. Three Cores (Gym / Eating / Coding), reasoning-mechanism as the soul, fixed reward calendar, 30-level Kaizen ladder. Tone: training journal × monastic contract.">
+          <DCArtboard id="hf-onboarding" label="00 · Onboarding · The Contract" width={1280} height={1100}>
+            <HfOnboarding />
+          </DCArtboard>
+          <DCArtboard id="hf-today" label="01 · Today · 3 Cores + Optionals" width={1280} height={920}>
+            <HfToday />
+          </DCArtboard>
+          <DCArtboard id="hf-reasoning" label="02 · Skip-Reason Modal — the soul" width={1280} height={900}>
+            <HfReasoning />
+          </DCArtboard>
+          <DCArtboard id="hf-rewards" label="03 · Reward Calendar · 6 fixed rewards" width={1280} height={1020}>
+            <HfRewardCalendar />
+          </DCArtboard>
+          <DCArtboard id="hf-levels" label="04 · Levels · 30-row alternating ladder" width={1280} height={1280}>
+            <HfLevels />
+          </DCArtboard>
+          <DCArtboard id="hf-day" label="05 · Day Detail · review past day" width={1280} height={1080}>
+            <HfDayDetail />
+          </DCArtboard>
+          <DCArtboard id="hf-continuation" label="06 · Day 91 · Continuation" width={1280} height={1100}>
+            <HfContinuation />
+          </DCArtboard>
+          <DCArtboard id="hf-settings" label="07 · Settings · locks vs editable" width={1280} height={1100}>
+            <HfSettings />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="lofi" title="LeveL · Stage 2 — Lo-Fi" subtitle="Real type hierarchy (Instrument Serif display + Geist Mono tactical + Inter UI), real components, grayscale only. Composition validated before color.">
+          <DCArtboard id="lf-onboarding" label="00 · Onboarding · step 4/6" width={1280} height={820}>
+            <LfOnboarding />
+          </DCArtboard>
+          <DCArtboard id="lf-today" label="01 · Today / Home" width={1280} height={820}>
+            <LfToday />
+          </DCArtboard>
+          <DCArtboard id="lf-log" label="02 · Log + Reasoning Modal" width={1280} height={820}>
+            <LfLogReason />
+          </DCArtboard>
+          <DCArtboard id="lf-levelup" label="03 · Level-Up Modal" width={1280} height={820}>
+            <LfLevelUp />
+          </DCArtboard>
+          <DCArtboard id="lf-vault" label="04 · Reward Vault" width={1280} height={820}>
+            <LfVault />
+          </DCArtboard>
+          <DCArtboard id="lf-history" label="05 · Codex / History" width={1280} height={820}>
+            <LfHistory />
+          </DCArtboard>
+          <DCArtboard id="lf-settings" label="06 · Settings · locks vs unlocked" width={1280} height={820}>
+            <LfSettings />
+          </DCArtboard>
+          <DCArtboard id="lf-continuation" label="07 · Day 91 · Continuation" width={1280} height={820}>
+            <LfContinuation />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="intro" title="LeveL · Stage 1 — Wireframes" subtitle="Annotated, lightly-interactive low-fidelity. Direction: RPG-gamified tone, web-first, all 8 PRD surfaces.">
+          <DCArtboard id="readme" label="Direction & assumptions" width={520} height={820}>
+            <div className="wf" style={{ padding: 26, height: '100%', overflow: 'auto', background: '#fafaf7' }}>
+              <div className="wf-cap">README · designer's note</div>
+              <h1 className="wf-h1" style={{ marginTop: 6 }}>LeveL — A 90-day quest log.</h1>
+              <p className="wf-body" style={{ marginTop: 10 }}>Wireframe pass. Boxes are dashed, type is mono, color is absent — we're solving structure, not polish.</p>
+              <div className="wf-cap" style={{ marginTop: 22 }}>Surfaces in this set</div>
+              <ol style={{ margin: '8px 0 0 16px', padding: 0, fontSize: 12, lineHeight: 1.55, color: '#333' }}>
+                <li>Onboarding · Step 4 of 6</li>
+                <li>Today / Home</li>
+                <li>Log + Reasoning Modal</li>
+                <li>Level-Up Modal</li>
+                <li>Reward Vault</li>
+                <li>History (Codex)</li>
+                <li>Settings</li>
+                <li>Day 91 · Continuation</li>
+              </ol>
+              <div className="wf-cap" style={{ marginTop: 22 }}>Three novel decisions</div>
+              <ul style={{ margin: '8px 0 0 16px', padding: 0, fontSize: 12, lineHeight: 1.55, color: '#333' }}>
+                <li><b>Chain ribbon</b> — 18-cell rolling-window strip with miss-pips.</li>
+                <li><b>Reward Vault as a journey</b> — 6 stations on a 90-day rail.</li>
+                <li><b>Level-up as a 3-card draw</b> — pick 1 of 3, unselected return to the pool.</li>
+              </ul>
+            </div>
+          </DCArtboard>
+          <DCArtboard id="onboarding" label="00 · Onboarding" width={1280} height={820}><WfOnboarding /></DCArtboard>
+          <DCArtboard id="today" label="01 · Today / Home" width={1280} height={820}><WfToday /></DCArtboard>
+          <DCArtboard id="log" label="02 · Log + Reasoning Modal" width={1280} height={820}><WfLogReasoning /></DCArtboard>
+          <DCArtboard id="levelup" label="03 · Level-Up Modal" width={1280} height={820}><WfLevelUp /></DCArtboard>
+          <DCArtboard id="vault" label="04 · Reward Vault" width={1280} height={820}><WfVault /></DCArtboard>
+          <DCArtboard id="history" label="05 · History / Codex" width={1280} height={820}><WfHistory /></DCArtboard>
+          <DCArtboard id="settings" label="06 · Settings" width={1280} height={820}><WfSettings /></DCArtboard>
+          <DCArtboard id="continuation" label="07 · Day 91 · Continuation" width={1280} height={820}><WfContinuation /></DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

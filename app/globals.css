@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* ── Brand Colors ── */
+  --color-paper: #f5f1e8;
+  --color-paper-2: #ebe5d4;
+  --color-card: #fbf8f1;
+  --color-card-2: #fdfbf6;
+  --color-bone: #faf5e8;
+  --color-ink: #161311;
+  --color-ink-2: #3a342d;
+  --color-ink-3: #6b6259;
+  --color-ink-4: #9c9489;
+  --color-hair: #dcd2bf;
+  --color-hair-2: #ebe2cf;
+  --color-ember: #c4622d;
+  --color-ember-d: #a04e1f;
+  --color-ember-l: #e8a26b;
+  --color-ember-bg: #fbeadb;
+  --color-moss: #3d5341;
+  --color-moss-l: #7c9377;
+  --color-moss-bg: #e3eadf;
+  --color-rust: #8a3a1f;
+
+  /* ── Fonts ── */
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --font-tactical: 'Geist Mono', ui-monospace, Menlo, monospace;
+
+  /* ── Shadows ── */
+  --shadow-card: 0 1px 1px rgba(35, 25, 15, 0.03);
+  --shadow-md: 0 1px 2px rgba(35, 25, 15, 0.04), 0 8px 24px rgba(35, 25, 15, 0.06);
+  --shadow-heavy: 0 24px 60px rgba(35, 25, 15, 0.18), 0 4px 12px rgba(35, 25, 15, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'ss01', 'cv11';
+}
+
+/* Paper texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(60, 40, 20, 0.04) 1px, transparent 1px);
+  background-size: 3px 3px;
+  opacity: 0.5;
+  z-index: 0;
+}

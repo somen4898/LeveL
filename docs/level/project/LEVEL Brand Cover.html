@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LEVEL — Brand Cover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5f1e8;
+    --paper2: #ebe5d4;
+    --card: #fbf8f1;
+    --bone: #faf5e8;
+    --ink: #161311;
+    --ink2: #3a342d;
+    --ink3: #6b6259;
+    --ink4: #9c9489;
+    --hair: #dcd2bf;
+    --ember: #c4622d;
+    --emberD: #a04e1f;
+    --emberL: #e8a26b;
+    --moss: #3d5341;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+  /* paper texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(rgba(60,40,20,.045) 1px, transparent 1px);
+    background-size: 3px 3px;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 30%, transparent 30%, rgba(80,50,20,.05) 100%),
+      linear-gradient(180deg, rgba(245,241,232,0) 0%, rgba(220,210,191,.18) 100%);
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 56px 64px 80px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* top bar */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--hair);
+  }
+  .topbar .left, .topbar .right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .stamp {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink3);
+  }
+  .stamp strong { color: var(--ink); font-weight: 600; }
+  .pip { width: 6px; height: 6px; border-radius: 50%; background: var(--ember); display: inline-block; }
+  .divider { width: 1px; height: 14px; background: var(--hair); }
+
+  /* corner crosshair / registration */
+  .reg {
+    position: fixed;
+    width: 18px;
+    height: 18px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .reg::before, .reg::after {
+    content: '';
+    position: absolute;
+    background: var(--ink);
+    opacity: .35;
+  }
+  .reg::before { left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); }
+  .reg::after { top: 50%; left: 0; right: 0; height: 1px; transform: translateY(-50%); }
+  .reg.tl { top: 24px; left: 24px; }
+  .reg.tr { top: 24px; right: 24px; }
+  .reg.bl { bottom: 24px; left: 24px; }
+  .reg.br { bottom: 24px; right: 24px; }
+
+  /* hero */
+  .hero {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+    padding: 80px 0;
+  }
+
+  /* left: lockup card */
+  .lockup-card {
+    background: var(--ink);
+    border-radius: 14px;
+    aspect-ratio: 4 / 5;
+    position: relative;
+    padding: 56px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.04) inset,
+      0 30px 60px -30px rgba(20,15,10,.45),
+      0 4px 16px -4px rgba(20,15,10,.25);
+  }
+  .lockup-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,240,210,.025) 1px, transparent 1px);
+    background-size: 3px 3px;
+    pointer-events: none;
+  }
+  .lockup-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 50%;
+    background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(232,162,107,.08), transparent 70%);
+    pointer-events: none;
+  }
+  .lockup-card .card-tag {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink4);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+  .lockup-card .card-tag .ember-tag { color: var(--emberL); }
+  .lockup-card .center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    position: relative;
+    z-index: 2;
+  }
+  .lockup-card .mark-block {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+  .lockup-card .mark-block .word {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 84px;
+    letter-spacing: .005em;
+    color: var(--bone);
+    line-height: 1;
+  }
+  .lockup-card .tagline {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--bone);
+    opacity: .82;
+    text-align: center;
+    line-height: 1.35;
+    max-width: 360px;
+  }
+  .lockup-card .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative;
+    z-index: 2;
+  }
+  .lockup-card .footer .col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .lockup-card .footer .col .k {
+    font-family: 'Geist Mono', monospace;
+    font-size: 9px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink4);
+  }
+  .lockup-card .footer .col .v {
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    letter-spacing: .04em;
+    color: var(--bone);
+    font-weight: 500;
+  }
+
+  /* right: type stack */
+  .right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 14px;
+    border: 1px solid var(--ink);
+    border-radius: 99px;
+    background: var(--card);
+    align-self: flex-start;
+  }
+  .kicker .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ember);
+    box-shadow: 0 0 0 3px rgba(196,98,45,.18);
+  }
+  .kicker span {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  h1 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 116px;
+    line-height: 0.92;
+    letter-spacing: -.025em;
+    margin: 0;
+    font-weight: 400;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--ember);
+  }
+  .lede {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--ink2);
+    margin: 0;
+    max-width: 520px;
+  }
+
+  /* meta strip */
+  .meta-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--hair);
+  }
+  .meta-strip .item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .meta-strip .item .k {
+    font-family: 'Geist Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink3);
+  }
+  .meta-strip .item .v {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .meta-strip .item .v em {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    color: var(--ember);
+  }
+  .meta-strip .item.col-color .v {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .meta-strip .item.col-color .swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    background: var(--ember);
+    border: 1px solid var(--emberD);
+  }
+
+  /* bottom row — index */
+  .index {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 24px;
+    border-top: 1px solid var(--hair);
+  }
+  .index .nums {
+    display: flex;
+    gap: 28px;
+  }
+  .index .nums .item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .index .nums .item .n {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ember);
+    line-height: 1;
+  }
+  .index .nums .item .l {
+    font-family: 'Geist Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink3);
+  }
+  .index .right {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink3);
+  }
+
+  @media (max-width: 1000px) {
+    .page { padding: 32px 24px; }
+    .hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 0; }
+    h1 { font-size: 80px; }
+    .lockup-card { aspect-ratio: 4 / 4; }
+    .lockup-card .mark-block .word { font-size: 56px; }
+    .meta-strip { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="reg tl"></div>
+<div class="reg tr"></div>
+<div class="reg bl"></div>
+<div class="reg br"></div>
+
+<div class="page">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="left">
+      <span class="stamp"><strong>LEVEL</strong> · BRAND COVER</span>
+      <span class="divider"></span>
+      <span class="stamp">v1.0</span>
+    </div>
+    <div class="right">
+      <span class="stamp">FILE 01 / 05</span>
+      <span class="divider"></span>
+      <span class="stamp"><span class="pip"></span> &nbsp;LOCKED · 2026</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+
+    <!-- LEFT: dark lockup card -->
+    <div class="lockup-card">
+      <div class="card-tag">
+        <span>§ THE MARK</span>
+        <span class="ember-tag">PRIMARY</span>
+      </div>
+
+      <div class="center">
+        <div class="mark-block">
+          <svg width="88" height="88" viewBox="0 0 32 32" aria-label="LEVEL mark">
+            <rect x="3"  y="20" width="9" height="9" rx="1.5" fill="#faf5e8" opacity="0.4" />
+            <rect x="10" y="13" width="9" height="9" rx="1.5" fill="#faf5e8" opacity="0.7" />
+            <rect x="17" y="6"  width="9" height="9" rx="1.5" fill="#faf5e8" />
+          </svg>
+          <span class="word">LEVEL</span>
+        </div>
+        <div class="tagline">"The contract you signed with yourself, made visible."</div>
+      </div>
+
+      <div class="footer">
+        <div class="col">
+          <span class="k">SIGNED</span>
+          <span class="v">21·DEC·2025 · 14:32</span>
+        </div>
+        <div class="col" style="text-align:right;">
+          <span class="k">RUN</span>
+          <span class="v">DAY 24 / 90</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: type stack -->
+    <div class="right-col">
+      <div class="kicker">
+        <span class="dot"></span>
+        <span>BRAND COVER · 2026</span>
+      </div>
+
+      <h1>Made<br><em>visible.</em></h1>
+
+      <p class="lede">
+        LEVEL is a 90-day self-accountability system. The brand stands for the same thing the product does — quiet rigor, lock-it-in seriousness, and the discipline of a training journal you do not negotiate with.
+      </p>
+
+      <div class="meta-strip">
+        <div class="item">
+          <span class="k">MARK</span>
+          <span class="v">Offset Squares</span>
+        </div>
+        <div class="item">
+          <span class="k">DISPLAY</span>
+          <span class="v"><em>Instrument</em></span>
+        </div>
+        <div class="item">
+          <span class="k">UI</span>
+          <span class="v">Inter Black</span>
+        </div>
+        <div class="item col-color">
+          <span class="k">ACCENT</span>
+          <span class="v"><span class="swatch"></span>Ember · #C4622D</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM INDEX -->
+  <div class="index">
+    <div class="nums">
+      <div class="item"><span class="n">01</span><span class="l">Mark</span></div>
+      <div class="item"><span class="n">02</span><span class="l">Colour</span></div>
+      <div class="item"><span class="n">03</span><span class="l">Type</span></div>
+      <div class="item"><span class="n">04</span><span class="l">Components</span></div>
+      <div class="item"><span class="n">05</span><span class="l">Voice</span></div>
+    </div>
+    <span class="right">§ &nbsp;BRAND KIT FOLLOWS</span>
+  </div>
+
+</div>
+
+</body>
+</html>

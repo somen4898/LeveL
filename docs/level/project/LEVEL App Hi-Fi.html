@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LEVEL — App · Hi-Fi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5f1e8;
+    --card: #fbf8f1;
+    --bone: #faf5e8;
+    --ink: #161311;
+    --ink2: #3a342d;
+    --ink3: #6b6259;
+    --ink4: #9c9489;
+    --hair: #dcd2bf;
+    --ember: #c4622d;
+    --emberD: #a04e1f;
+    --emberL: #e8a26b;
+    --moss: #3d5341;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  body::before { content: ''; position: fixed; inset: 0; pointer-events: none; background-image: radial-gradient(rgba(60,40,20,.04) 1px, transparent 1px); background-size: 3px 3px; z-index: 0; }
+
+  /* fixed side rail */
+  .rail {
+    position: fixed;
+    left: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 30;
+    background: var(--ink);
+    border-radius: 12px;
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 24px 48px -16px rgba(20,15,10,.35), 0 4px 12px -2px rgba(20,15,10,.18);
+    width: 220px;
+  }
+  .rail .rail-head {
+    font-family: 'Geist Mono', monospace;
+    font-size: 9px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink4);
+    padding: 6px 10px 12px;
+    border-bottom: 1px solid #2a2520;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .rail .rail-head strong { color: var(--bone); font-weight: 600; }
+  .rail a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #d6cdbe;
+    font-family: 'Geist Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: .04em;
+    transition: background .15s, color .15s;
+  }
+  .rail a:hover { background: #2a2520; color: var(--bone); }
+  .rail a.active { background: var(--ember); color: #fff; }
+  .rail a .num {
+    font-family: 'Geist Mono', monospace;
+    font-size: 9px;
+    color: var(--ink4);
+    width: 18px;
+  }
+  .rail a.active .num { color: rgba(255,255,255,.7); }
+
+  /* main */
+  main { position: relative; z-index: 1; padding: 64px 64px 120px 300px; max-width: 1620px; }
+
+  /* hero */
+  .hero { padding: 32px 0 56px; border-bottom: 1px solid var(--hair); margin-bottom: 64px; }
+  .kicker { display: inline-flex; align-items: center; gap: 10px; padding: 7px 13px; border: 1px solid var(--ink); border-radius: 99px; background: var(--card); }
+  .kicker .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ember); }
+  .kicker span { font-family: 'Geist Mono', monospace; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink); font-weight: 500; }
+  .hero h1 { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 96px; line-height: 0.95; letter-spacing: -.022em; margin: 28px 0 0 0; max-width: 1100px; }
+  .hero h1 em { font-style: italic; color: var(--ember); }
+  .hero .lede { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-size: 22px; line-height: 1.45; color: var(--ink2); margin: 28px 0 0 0; max-width: 720px; }
+  .hero-meta { display: flex; gap: 48px; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--hair); }
+  .hero-meta .item { display: flex; flex-direction: column; gap: 4px; }
+  .hero-meta .k { font-family: 'Geist Mono', monospace; font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink3); }
+  .hero-meta .v { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--ink); }
+
+  /* artboard block */
+  .artboard {
+    margin-top: 80px;
+    scroll-margin-top: 32px;
+  }
+  .artboard:first-of-type { margin-top: 0; }
+  .ab-head {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 24px;
+    align-items: baseline;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--hair);
+    margin-bottom: 24px;
+  }
+  .ab-head .num { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-size: 56px; line-height: 1; color: var(--ember); }
+  .ab-head h2 { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 38px; line-height: 1; letter-spacing: -.01em; margin: 0 0 8px 0; }
+  .ab-head .role { font-family: 'Geist Mono', monospace; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink3); }
+  .ab-head .desc { font-size: 14px; line-height: 1.55; color: var(--ink2); margin: 12px 0 0 0; max-width: 680px; }
+  .ab-head .stamp { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); text-align: right; align-self: flex-end; }
+  .ab-head .stamp strong { color: var(--ink); }
+
+  .frame {
+    background: var(--card);
+    border: 1px solid var(--hair);
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 24px 48px -28px rgba(20,15,10,.25), 0 4px 12px -4px rgba(20,15,10,.08);
+  }
+  .frame .frame-stamp {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    z-index: 5;
+    font-family: 'Geist Mono', monospace;
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink4);
+    background: rgba(251,248,241,.85);
+    padding: 4px 8px;
+    border-radius: 4px;
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--hair);
+    pointer-events: none;
+  }
+  .frame .canvas {
+    width: 1280px;
+    transform-origin: top left;
+  }
+
+  /* contract footer */
+  .contract { margin-top: 96px; padding: 36px 44px; background: var(--ink); color: var(--bone); border-radius: 12px; display: flex; align-items: center; gap: 28px; }
+  .contract .cnum { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-size: 72px; color: var(--emberL); line-height: 1; }
+  .contract p { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-size: 20px; line-height: 1.4; margin: 0; flex: 1; }
+  .contract .stamp { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink4); align-self: flex-end; }
+
+  @media (max-width: 1200px) {
+    .rail { display: none; }
+    main { padding: 48px 32px 80px; }
+    .hero h1 { font-size: 64px; }
+  }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<!-- fixed side rail -->
+<nav class="rail" id="rail">
+  <div class="rail-head"><strong>LEVEL</strong><span>HI-FI</span></div>
+  <a href="#hf-onboarding"><span class="num">00</span> Onboarding</a>
+  <a href="#hf-today"><span class="num">01</span> Today</a>
+  <a href="#hf-reasoning"><span class="num">02</span> Skip Reason</a>
+  <a href="#hf-rewards"><span class="num">03</span> Rewards</a>
+  <a href="#hf-levels"><span class="num">04</span> Levels</a>
+  <a href="#hf-day"><span class="num">05</span> Day Detail</a>
+  <a href="#hf-continuation"><span class="num">06</span> Day 91</a>
+  <a href="#hf-settings"><span class="num">07</span> Settings</a>
+</nav>
+
+<main>
+
+  <!-- hero -->
+  <section class="hero">
+    <div class="kicker"><span class="dot"></span><span>STAGE 3 · HI-FI · APP SURFACES</span></div>
+    <h1>The contract,<br>built <em>visible.</em></h1>
+    <p class="lede">All eight surfaces of LEVEL at full fidelity. Three Cores, fixed reward calendar, 30-level Kaizen ladder, and the reasoning mechanism that anchors the whole system. Web-first. 1280-wide.</p>
+    <div class="hero-meta">
+      <div class="item"><span class="k">SCREENS</span><span class="v">8 surfaces</span></div>
+      <div class="item"><span class="k">FIDELITY</span><span class="v">Pixel-locked</span></div>
+      <div class="item"><span class="k">PALETTE</span><span class="v">Paper · Ink · Ember · Moss</span></div>
+      <div class="item"><span class="k">TYPE</span><span class="v">Instrument · Inter · Geist Mono</span></div>
+      <div class="item"><span class="k">VERSION</span><span class="v">v1.0 · 2026</span></div>
+    </div>
+  </section>
+
+  <!-- artboards mount here -->
+  <div id="boards"></div>
+
+  <!-- footer -->
+  <div class="contract">
+    <div class="cnum">§</div>
+    <p>"Eight surfaces. One contract. The product carries the same weight as the brand — quiet, rigorous, locked."</p>
+    <span class="stamp">LEVEL · APP HI-FI v1.0</span>
+  </div>
+
+</main>
+
+<!-- shim: provide non-canvas wrappers so the existing brand/level-mark.jsx and hf-screens-*.jsx files load identically -->
+<script type="text/babel">
+  // Stub Design Canvas wrappers so files importing these globals don't blow up if they ever do.
+  // The hf screens don't actually use these — they're standalone components. But brand mark does.
+  window.DesignCanvas = ({ children }) => <>{children}</>;
+  window.DCSection = ({ children }) => <>{children}</>;
+  window.DCArtboard = ({ children }) => <>{children}</>;
+</script>
+<script type="text/babel" src="brand/level-mark.jsx"></script>
+<script type="text/babel" src="hf/hf-primitives.jsx"></script>
+<script type="text/babel" src="hf/hf-screens-a.jsx"></script>
+<script type="text/babel" src="hf/hf-screens-b.jsx"></script>
+<script type="text/babel" src="hf/hf-screens-c.jsx"></script>
+
+<script type="text/babel">
+  const SCREENS = [
+    { id: 'hf-onboarding',  num: '00', title: 'Onboarding · The Contract',         role: 'Sign-in flow · 6-step contract', height: 1100, comp: 'HfOnboarding',
+      desc: 'The signing ceremony. User declares character, three Cores, schedule, and reasoning policy. Once signed, locked for 90 days — no edits, no removals, no reductions.' },
+    { id: 'hf-today',       num: '01', title: 'Today',                              role: 'Home · daily contract surface',  height: 920,  comp: 'HfToday',
+      desc: 'Three Cores as the only thing that matters. Optionals below the fold. Chain ribbon shows the 18-day reward window. The day qualifies when all three close.' },
+    { id: 'hf-reasoning',   num: '02', title: 'Skip Reason',                        role: 'Modal · the soul of the system', height: 900,  comp: 'HfReasoning',
+      desc: 'You can skip a Core, but you must write something true. The form survives lazy reasons; lazy reasons rarely survive themselves.' },
+    { id: 'hf-rewards',     num: '03', title: 'Reward Calendar',                    role: '6 fixed rewards across 90 days', height: 1020, comp: 'HfRewardCalendar',
+      desc: 'Six pre-declared rewards on a 90-day rail. Each unlocks at a specific day, contingent on the chain. Pre-commitment closes the bargaining loop.' },
+    { id: 'hf-levels',      num: '04', title: 'Levels',                             role: '30-row Kaizen ladder',           height: 1280, comp: 'HfLevels',
+      desc: 'Thirty levels, alternating left/right. Earned through qualified days. The ladder is the long view — Today is the short.' },
+    { id: 'hf-day',         num: '05', title: 'Day Detail',                         role: 'Review · past day',              height: 1080, comp: 'HfDayDetail',
+      desc: 'Look back at any day in the run. Cores closed, reasons given, Optionals logged. Read-only after the day ends.' },
+    { id: 'hf-continuation',num: '06', title: 'Day 91 · Continuation',              role: 'End-state · what happens next',  height: 1100, comp: 'HfContinuation',
+      desc: 'The contract ends. Three options: re-sign at the same intensity, re-sign harder, or step away. No automatic renewal — that would defeat the point.' },
+    { id: 'hf-settings',    num: '07', title: 'Settings',                           role: 'Locks vs editable',              height: 1100, comp: 'HfSettings',
+      desc: 'A short list of what you can change mid-run (notifications, theme, schedule shifts) and a long list of what you cannot (Cores, targets, reasoning policy, rewards).' },
+  ];
+
+  function Artboard({ s, idx }) {
+    const Comp = window[s.comp];
+    const ref = React.useRef(null);
+    const [scale, setScale] = React.useState(1);
+
+    React.useEffect(() => {
+      if (!ref.current) return;
+      const el = ref.current;
+      const ro = new ResizeObserver(() => {
+        const w = el.clientWidth;
+        const next = Math.min(1, w / 1280);
+        setScale(next);
+      });
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, []);
+
+    return (
+      <section className="artboard" id={s.id}>
+        <div className="ab-head">
+          <div className="num">{s.num}</div>
+          <div>
+            <div className="role">{s.role}</div>
+            <h2>{s.title}</h2>
+            <p className="desc">{s.desc}</p>
+          </div>
+          <div className="stamp">SCREEN <strong>{s.num}</strong> / 07<br/>1280 × {s.height}</div>
+        </div>
+        <div className="frame" ref={ref} style={{ height: s.height * scale }}>
+          <span className="frame-stamp">§ {s.num.toUpperCase()} · {s.title.toUpperCase()}</span>
+          <div className="canvas" style={{ width: 1280, height: s.height, transform: `scale(${scale})` }}>
+            {Comp ? <Comp /> : <div style={{padding:40, fontFamily:'monospace'}}>Component {s.comp} not found</div>}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  function App() {
+    // Active rail item on scroll
+    React.useEffect(() => {
+      const links = document.querySelectorAll('#rail a');
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+          }
+        });
+      }, { rootMargin: '-40% 0px -55% 0px' });
+      SCREENS.forEach(s => {
+        const el = document.getElementById(s.id);
+        if (el) obs.observe(el);
+      });
+      return () => obs.disconnect();
+    }, []);
+
+    return (
+      <>
+        {SCREENS.map((s, i) => <Artboard key={s.id} s={s} idx={i} />)}
+      </>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('boards')).render(<App />);
+</script>
+
+</body>
+</html>
