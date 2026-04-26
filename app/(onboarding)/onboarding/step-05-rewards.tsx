@@ -61,9 +61,9 @@ export function StepRewards({ state, setState, onBack }: StepProps) {
 
       // Create cores
       const coreConfigs = [
-        { kind: "gym" as const, schedule_days: state.gymDays },
-        { kind: "eating" as const, schedule_days: [0, 1, 2, 3, 4, 5, 6] },
-        { kind: "coding" as const, schedule_days: state.codingDays },
+        { kind: "body" as const, schedule_days: state.bodyDays },
+        { kind: "fuel" as const, schedule_days: [0, 1, 2, 3, 4, 5, 6] },
+        { kind: "craft" as const, schedule_days: state.craftDays },
       ];
 
       for (const cfg of coreConfigs) {
@@ -81,14 +81,14 @@ export function StepRewards({ state, setState, onBack }: StepProps) {
         if (coreErr || !core) throw new Error(coreErr?.message || "Failed to create core");
 
         // Create subtasks
-        if (cfg.kind === "gym") {
+        if (cfg.kind === "body") {
           await supabase.from("subtasks").insert({
             core_id: core.id,
             user_id: user.id,
-            label: `Complete a structured workout, ≥${state.gymMinutes} min`,
+            label: `Complete a structured workout, ≥${state.bodyMinutes} min`,
             measurement: "binary",
           });
-        } else if (cfg.kind === "eating") {
+        } else if (cfg.kind === "fuel") {
           await supabase.from("subtasks").insert([
             {
               core_id: core.id,
@@ -109,9 +109,9 @@ export function StepRewards({ state, setState, onBack }: StepProps) {
               position: 1,
             },
           ]);
-        } else if (cfg.kind === "coding") {
+        } else if (cfg.kind === "craft") {
           await supabase.from("subtasks").insert(
-            state.codingSubtasks.map((s, i) => ({
+            state.craftSubtasks.map((s, i) => ({
               core_id: core.id,
               user_id: user.id,
               label: s.label,
@@ -164,7 +164,7 @@ export function StepRewards({ state, setState, onBack }: StepProps) {
         Six things you earn.
       </h1>
       <p className="text-[14.5px] leading-[1.5] text-ink-2 mt-5 max-w-[580px]">
-        Choose six rewards — alternating small and big. Each unlocks at a fixed day
+        Choose six rewards, alternating small and big. Each unlocks at a fixed day
         if you qualify. Pre-commitment closes the bargaining loop. No downgrades after sign.
       </p>
 
@@ -249,7 +249,7 @@ function buildLevelCatalogue(runId: string, userId: string) {
   const levels = [
     { n: 1, kind: "TIGHTEN", desc: "Water target +50ml" },
     { n: 2, kind: "UNLOCK", desc: "Mobility · 10 min", optLabel: "Mobility · 10 min", optMeasurement: "numeric", optTarget: 10, optUnit: "min" },
-    { n: 3, kind: "TIGHTEN", desc: "Gym minimum +2 minutes" },
+    { n: 3, kind: "TIGHTEN", desc: "Body minimum +2 minutes" },
     { n: 4, kind: "UNLOCK", desc: "Tech reading · 20 min", optLabel: "Tech reading · 20 min", optMeasurement: "numeric", optTarget: 20, optUnit: "min" },
     { n: 5, kind: "TIGHTEN", desc: "Sleep window narrowed by 15 min" },
     { n: 6, kind: "UNLOCK", desc: "Cold shower · 60 sec", optLabel: "Cold shower · 60 sec", optMeasurement: "numeric", optTarget: 60, optUnit: "sec" },

@@ -12,15 +12,14 @@ export interface OnboardingState {
   calorieTarget: number;
   proteinTarget: number;
   // Schedule
-  gymDays: number[];
-  codingDays: number[];
-  // Cores are fixed: gym, eating, coding
-  // Gym subtask
-  gymMinutes: number;
-  // Coding subtasks
-  codingSubtasks: { label: string; measurement: "binary" }[];
-  // Eating subtasks
-  eatingSubtasks: { label: string; measurement: "numeric"; target: number; unit: string }[];
+  bodyDays: number[];
+  craftDays: number[];
+  // Body subtask
+  bodyMinutes: number;
+  // Craft subtasks
+  craftSubtasks: { label: string; measurement: "binary" }[];
+  // Fuel subtasks
+  fuelSubtasks: { label: string; measurement: "numeric"; target: number; unit: string }[];
   // Rewards
   rewards: {
     scheduledDay: number;
@@ -34,14 +33,14 @@ export interface OnboardingState {
 const INITIAL_STATE: OnboardingState = {
   calorieTarget: 2950,
   proteinTarget: 145,
-  gymDays: [1, 2, 4, 6], // Mon, Tue, Thu, Sat
-  codingDays: [1, 2, 3, 4, 5], // Mon-Fri
-  gymMinutes: 45,
-  codingSubtasks: [
+  bodyDays: [1, 2, 4, 6], // Mon, Tue, Thu, Sat
+  craftDays: [1, 2, 3, 4, 5], // Mon-Fri
+  bodyMinutes: 45,
+  craftSubtasks: [
     { label: "One LeetCode problem (any difficulty)", measurement: "binary" },
     { label: "One focused 60-min project session", measurement: "binary" },
   ],
-  eatingSubtasks: [
+  fuelSubtasks: [
     { label: "Calories", measurement: "numeric", target: 2950, unit: "kcal" },
     { label: "Protein", measurement: "numeric", target: 145, unit: "g" },
   ],

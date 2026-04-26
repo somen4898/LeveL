@@ -109,7 +109,7 @@ export function TodayContent({
         if (day > activeWindow.windowEnd) return "f";
         if (day === currentDay) return "t";
         if (day < currentDay) {
-          // Would need actual qualifying status per day — simplified for now
+          // Would need actual qualifying status per day, simplified for now
           return day <= qualifyingDays ? "q" : "m";
         }
         return "f";
@@ -135,7 +135,7 @@ export function TodayContent({
 
   return (
     <>
-      {/* Hero — today's contract status */}
+      {/* Hero: today's contract status */}
       <div className="bg-card border border-hair rounded-[10px] p-7 shadow-[var(--shadow-md)]">
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
@@ -183,7 +183,7 @@ export function TodayContent({
                 key={core.id}
                 numeral={romanNumeral(i + 1)}
                 name={core.kind.charAt(0).toUpperCase() + core.kind.slice(1)}
-                target={core.kind === "gym" ? "Structured lift · 45 min" : core.kind === "eating" ? "Surplus + protein" : "LeetCode OR 60-min focus"}
+                target={core.kind === "body" ? "Structured lift · 45 min" : core.kind === "fuel" ? "Surplus + protein" : "LeetCode OR 60-min focus"}
                 done={allDone}
                 subtasks={coreSubs}
                 completions={completions}

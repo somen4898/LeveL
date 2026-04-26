@@ -30,7 +30,7 @@ type CoresInsert = {
   id?: string;
   run_id: string;
   user_id: string;
-  kind: "eating" | "gym" | "coding";
+  kind: "body" | "fuel" | "craft";
   schedule_days: number[];
   is_locked?: boolean;
 };
@@ -172,7 +172,7 @@ export type Database = {
           id: string;
           run_id: string;
           user_id: string;
-          kind: "eating" | "gym" | "coding";
+          kind: "body" | "fuel" | "craft";
           schedule_days: number[];
           is_locked: boolean;
           created_at: string;

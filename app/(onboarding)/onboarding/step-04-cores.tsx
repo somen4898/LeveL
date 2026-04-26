@@ -27,16 +27,16 @@ export function StepCores({ state, onNext, onBack }: StepProps) {
   const cores = [
     {
       n: "I",
-      name: "Gym",
-      target: `Structured lift · ${state.gymMinutes} min minimum`,
-      schedule: `${state.gymDays.length}× / WEEK`,
-      scheduleDays: state.gymDays.map((d) => DAY_NAMES[d]).join(" · "),
-      subtasks: [`Complete a structured workout, ≥${state.gymMinutes} min, with logged sets.`],
+      name: "Body",
+      target: `Structured lift · ${state.bodyMinutes} min minimum`,
+      schedule: `${state.bodyDays.length}× / WEEK`,
+      scheduleDays: state.bodyDays.map((d) => DAY_NAMES[d]).join(" · "),
+      subtasks: [`Complete a structured workout, ≥${state.bodyMinutes} min, with logged sets.`],
     },
     {
       n: "II",
-      name: "Eating",
-      target: "Bulk · surplus + protein",
+      name: "Fuel",
+      target: "Intake · surplus + protein",
       schedule: "DAILY",
       scheduleDays: "EVERY DAY",
       subtasks: [
@@ -46,11 +46,11 @@ export function StepCores({ state, onNext, onBack }: StepProps) {
     },
     {
       n: "III",
-      name: "Coding",
+      name: "Craft",
       target: "Deliberate practice",
-      schedule: `${state.codingDays.length}× / WEEK`,
-      scheduleDays: state.codingDays.map((d) => DAY_NAMES[d]).join(" · "),
-      subtasks: state.codingSubtasks.map((s) => s.label),
+      schedule: `${state.craftDays.length}× / WEEK`,
+      scheduleDays: state.craftDays.map((d) => DAY_NAMES[d]).join(" · "),
+      subtasks: state.craftSubtasks.map((s) => s.label),
     },
   ];
 
@@ -68,7 +68,7 @@ export function StepCores({ state, onNext, onBack }: StepProps) {
       </h1>
       <p className="text-[14.5px] leading-[1.5] text-ink-2 mt-5 max-w-[580px]">
         Cores are binary. You either did them, or you didn&apos;t. Once signed, they are
-        locked for 90 days — you cannot change targets, cannot remove a core,
+        locked for 90 days. You cannot change targets, cannot remove a core,
         cannot reduce a schedule. This is the friction that makes the system work.
       </p>
 
@@ -150,7 +150,7 @@ export function StepCores({ state, onNext, onBack }: StepProps) {
         </button>
         <div className="flex-1" />
         <span className="font-[var(--font-tactical)] text-[10px] text-ink-3 tracking-[0.04em]">
-          NEXT — STEP 05 · CHOOSE SIX REWARDS
+          NEXT: STEP 05 · CHOOSE SIX REWARDS
         </span>
       </div>
     </div>

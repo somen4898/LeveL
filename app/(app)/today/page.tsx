@@ -124,7 +124,7 @@ export default async function TodayPage() {
     <>
       <Topbar
         crumb={`TODAY · ${dayLabel}`}
-        sub={`Day ${currentDay} / 90 — Run 01`}
+        sub={`Day ${currentDay} / 90, Run 01`}
         status={logData?.status === "qualified" ? "Qualified" : logData?.status === "failed" ? "Failed" : "In progress"}
         statusKind={logData?.status === "qualified" ? "moss" : logData?.status === "failed" ? "ember" : "progress"}
       />

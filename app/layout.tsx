@@ -7,20 +7,26 @@ const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
   style: ["normal", "italic"],
+  display: "swap",
+  preload: false,
 });
 
 const inter = Inter({
   variable: "--font-ui",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-tactical",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
-  title: "LEVEL — 90-Day Personal Operating System",
+  title: "LeveL: 90-Day Personal Operating System",
   description:
     "Three Cores, fixed reward calendar, 30-level Kaizen ladder. The contract you signed with yourself.",
 };

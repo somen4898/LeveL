@@ -48,7 +48,7 @@ export default async function LevelsPage() {
     ((history ?? []) as { level_number: number }[]).map(h => h.level_number)
   );
 
-  // Stack so far — levels achieved
+  // Stack so far: levels achieved
   const stack = catalogueData.filter(l => l.level_number <= currentLevel);
 
   // Current level effect
@@ -92,7 +92,7 @@ export default async function LevelsPage() {
             {nextEffect && (
               <>
                 <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.18em] uppercase text-ink-4">
-                  NEXT — LV {padTwo(currentLevel + 1)} · {nextEffect.effect_kind}
+                  NEXT: LV {padTwo(currentLevel + 1)} · {nextEffect.effect_kind}
                 </span>
                 <div className="flex items-center gap-3 mt-2">
                   <span className="font-[var(--font-tactical)] text-[28px] font-semibold tabular-nums">

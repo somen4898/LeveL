@@ -80,7 +80,7 @@ export async function closeDay(rawInput: unknown) {
   // Build domain input
   const coresWithSubs = scheduledCores.map(c => ({
     id: c.id,
-    kind: c.kind as "eating" | "gym" | "coding",
+    kind: c.kind as "body" | "fuel" | "craft",
     subtasks: ((subtasks ?? []) as { id: string; core_id: string; label: string; measurement: "binary" | "numeric"; target_numeric: number | null; active_from_level: number; active_until_level: number | null }[])
       .filter(s => s.core_id === c.id),
   }));

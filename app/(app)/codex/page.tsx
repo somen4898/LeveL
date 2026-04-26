@@ -71,7 +71,7 @@ export default async function CodexPage() {
               MOST USED TAG
             </span>
             <div className="font-[var(--font-tactical)] text-[48px] font-semibold mt-1 tracking-[-0.03em] uppercase">
-              {Object.entries(tagCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "—"}
+              {Object.entries(tagCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "-"}
             </div>
           </div>
         </div>

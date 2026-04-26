@@ -77,7 +77,7 @@ export default async function Day91Page() {
             <em className="italic text-ink-3">The system stays open.</em>
           </h1>
           <p className="font-[var(--font-display)] italic text-[22px] leading-[1.45] text-ink-2 mt-5 max-w-[700px]">
-            Your level holds. Your active task list holds. The chain resets, the windows reset, the rewards reset. Pick again — or close the book here.
+            Your level holds. Your active task list holds. The chain resets, the windows reset, the rewards reset. Pick again, or close the book here.
           </p>
         </div>
 
@@ -94,7 +94,7 @@ export default async function Day91Page() {
           <div className="mt-5 grid grid-cols-4 gap-6">
             {[
               ["QUALIFYING DAYS", String(qualifyingDays), "OF 90"],
-              ["LONGEST WINDOW", "—", "—"],
+              ["LONGEST WINDOW", "-", "-"],
               ["REWARDS CLAIMED", String(rewardsClaimed), "OF 6"],
               ["LEVEL REACHED", String(level), "OF 30"],
             ].map(([k, v, sub]) => (
@@ -154,7 +154,7 @@ export default async function Day91Page() {
               Pick new Cores.
             </h3>
             <p className="text-[13.5px] leading-[1.6] text-ink-2 mt-3">
-              Replace one or all three Cores. Keep your level. Re-sign the contract. The system is the same — the body of work is new.
+              Replace one or all three Cores. Keep your level. Re-sign the contract. The system is the same; the body of work is new.
             </p>
             <hr className="border-none h-px bg-hair-2 my-4" />
             <div className="flex gap-2">
@@ -201,7 +201,7 @@ export default async function Day91Page() {
           <div className="flex flex-col flex-1">
             <span className="text-[14px] font-semibold">Close the book.</span>
             <span className="font-[var(--font-ui)] text-[12px] text-ink-3 leading-[1.5] mt-[3px]">
-              End your relationship with LEVEL. Run 01 is archived; you can re-open any time.
+              End your relationship with LeveL. Run 01 is archived; you can re-open any time.
             </span>
           </div>
           <button className="px-3 py-[7px] bg-card text-ink-2 border border-hair rounded-[6px] text-[11.5px] font-medium cursor-pointer hover:bg-paper transition-colors">

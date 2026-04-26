@@ -64,7 +64,7 @@ export function StepTargets({ state, setState, onNext, onBack }: StepProps) {
 
       <div className="mt-4 p-4 rounded-[7px] bg-bone border border-hair-2">
         <p className="text-[12px] text-ink-3 leading-[1.5]">
-          LEVEL does not track individual foods. You track however you like — MyFitnessPal, a notebook, mental math.
+          LeveL does not track individual foods. You track however you like: MyFitnessPal, a notebook, mental math.
           At end of day you report: did you hit the number, yes or no. Honesty is the only auditor.
         </p>
       </div>

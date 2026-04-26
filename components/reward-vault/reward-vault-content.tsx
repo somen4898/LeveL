@@ -155,7 +155,7 @@ export function RewardVaultContent({ rewards, currentDay, qualifiedDays, runId, 
                   <span className="font-[var(--font-tactical)] text-[13px] text-ink-2 tabular-nums">
                     {r.price_amount
                       ? `${r.price_currency ?? "₹"}${r.price_amount.toLocaleString()}`
-                      : "—"}
+                      : "-"}
                   </span>
                   <span className="font-[var(--font-tactical)] text-[10px] text-ink-3 tracking-[0.04em]">
                     UNLOCKS · DAY {r.scheduled_day}

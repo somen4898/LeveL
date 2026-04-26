@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const CoreInputSchema = z.object({
-  kind: z.enum(["eating", "gym", "coding"]),
+  kind: z.enum(["body", "fuel", "craft"]),
   scheduleDays: z.array(z.number().min(0).max(6)).min(1),
   subtasks: z.array(
     z.object({

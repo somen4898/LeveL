@@ -70,7 +70,7 @@ export function StepSchedule({ state, setState, onNext, onBack }: StepProps) {
         Which days for which Cores.
       </h1>
       <p className="text-[14.5px] leading-[1.5] text-ink-2 mt-5 max-w-[580px]">
-        Eating is daily — no exceptions. Gym and Coding have flexible schedules.
+        Fuel is daily, no exceptions. Body and Craft have flexible schedules.
         Pick the days that match your life. Once signed, the schedule locks.
       </p>
 
@@ -78,43 +78,43 @@ export function StepSchedule({ state, setState, onNext, onBack }: StepProps) {
         <div className="bg-card border border-hair rounded-[10px] p-6">
           <div className="flex items-center gap-3 mb-4">
             <span className="font-[var(--font-display)] text-[26px] italic text-ember">I</span>
-            <span className="text-[16px] font-semibold">Gym</span>
+            <span className="text-[16px] font-semibold">Body</span>
             <span className="font-[var(--font-tactical)] text-[10px] text-ink-3 tracking-[0.1em] uppercase ml-auto">
-              {state.gymDays.length}× / WEEK
+              {state.bodyDays.length}× / WEEK
             </span>
           </div>
           <DayPicker
-            selected={state.gymDays}
-            onChange={(days) => setState({ ...state, gymDays: days })}
-            label="Gym days"
+            selected={state.bodyDays}
+            onChange={(days) => setState({ ...state, bodyDays: days })}
+            label="Body days"
           />
         </div>
 
         <div className="bg-card border border-hair rounded-[10px] p-6">
           <div className="flex items-center gap-3 mb-4">
             <span className="font-[var(--font-display)] text-[26px] italic text-ember">II</span>
-            <span className="text-[16px] font-semibold">Eating</span>
+            <span className="text-[16px] font-semibold">Fuel</span>
             <span className="ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-[var(--font-tactical)] text-[10px] tracking-[0.1em] uppercase bg-ink text-bone border border-ink font-medium">
               DAILY
             </span>
           </div>
           <p className="text-[13px] text-ink-3">
-            Eating is every day. No schedule picker needed.
+            Fuel is every day. No schedule picker needed.
           </p>
         </div>
 
         <div className="bg-card border border-hair rounded-[10px] p-6">
           <div className="flex items-center gap-3 mb-4">
             <span className="font-[var(--font-display)] text-[26px] italic text-ember">III</span>
-            <span className="text-[16px] font-semibold">Coding</span>
+            <span className="text-[16px] font-semibold">Craft</span>
             <span className="font-[var(--font-tactical)] text-[10px] text-ink-3 tracking-[0.1em] uppercase ml-auto">
-              {state.codingDays.length}× / WEEK
+              {state.craftDays.length}× / WEEK
             </span>
           </div>
           <DayPicker
-            selected={state.codingDays}
-            onChange={(days) => setState({ ...state, codingDays: days })}
-            label="Coding days"
+            selected={state.craftDays}
+            onChange={(days) => setState({ ...state, craftDays: days })}
+            label="Craft days"
           />
         </div>
       </div>

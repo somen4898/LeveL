@@ -12,7 +12,7 @@ export interface Subtask {
 
 export interface Core {
   id: string;
-  kind: "eating" | "gym" | "coding";
+  kind: "body" | "fuel" | "craft";
   subtasks: Subtask[];
 }
 

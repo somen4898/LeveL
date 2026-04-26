@@ -47,20 +47,20 @@ export default async function SettingsPage() {
 
   const rewardsArr = (rewards ?? []) as { id: string; scheduled_day: number; name: string; price_amount: number | null }[];
 
-  const gymCore = coresArr.find(c => c.kind === "gym");
-  const eatingCore = coresArr.find(c => c.kind === "eating");
-  const codingCore = coresArr.find(c => c.kind === "coding");
+  const bodyCore = coresArr.find(c => c.kind === "body");
+  const fuelCore = coresArr.find(c => c.kind === "fuel");
+  const craftCore = coresArr.find(c => c.kind === "craft");
 
-  const gymSubs = subtasksArr.filter(s => s.core_id === gymCore?.id);
-  const eatingSubs = subtasksArr.filter(s => s.core_id === eatingCore?.id);
-  const codingSubs = subtasksArr.filter(s => s.core_id === codingCore?.id);
+  const bodySubs = subtasksArr.filter(s => s.core_id === bodyCore?.id);
+  const fuelSubs = subtasksArr.filter(s => s.core_id === fuelCore?.id);
+  const craftSubs = subtasksArr.filter(s => s.core_id === craftCore?.id);
 
   const lockedItems = [
-    { k: "Core I — Gym", v: `${gymCore?.schedule_days.length ?? 0}× / week · ${gymSubs.map(s => s.label).join(", ")}` },
-    { k: "Core II — Eating", v: eatingSubs.map(s => `${s.label}${s.target_numeric ? ` ≥ ${s.target_numeric}${s.unit ?? ""}` : ""}`).join(" · ") },
-    { k: "Core III — Coding", v: `${codingCore?.schedule_days.length ?? 0}× / week · ${codingSubs.map(s => s.label).join(" or ")}` },
+    { k: "Core I: Body", v: `${bodyCore?.schedule_days.length ?? 0}× / week · ${bodySubs.map(s => s.label).join(", ")}` },
+    { k: "Core II: Fuel", v: fuelSubs.map(s => `${s.label}${s.target_numeric ? ` ≥ ${s.target_numeric}${s.unit ?? ""}` : ""}`).join(" · ") },
+    { k: "Core III: Craft", v: `${craftCore?.schedule_days.length ?? 0}× / week · ${craftSubs.map(s => s.label).join(" or ")}` },
     ...rewardsArr.map((r, i) => ({
-      k: `Reward ${String(i + 1).padStart(2, "0")} — Day ${r.scheduled_day}`,
+      k: `Reward ${String(i + 1).padStart(2, "0")}: Day ${r.scheduled_day}`,
       v: `${r.name}${r.price_amount ? ` · ₹${r.price_amount.toLocaleString()}` : ""}`,
     })),
   ];
@@ -79,7 +79,7 @@ export default async function SettingsPage() {
               </span>
               <p className="font-[var(--font-display)] italic text-[18px] mt-1.5 leading-[1.4]">
                 Cores, targets, and reward picks are locked for the remaining {daysLeft} days.
-                This is the friction that makes the system work — not a bug.
+                This is the friction that makes the system work, not a bug.
               </p>
             </div>
           </div>

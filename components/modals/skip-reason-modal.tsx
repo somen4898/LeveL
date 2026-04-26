@@ -86,7 +86,7 @@ export function SkipReasonModal({
         </h2>
 
         <p className="text-[13.5px] leading-[1.5] text-ink-2 mt-3.5">
-          You&apos;re free to skip — Optionals don&apos;t fail your day. But the day only
+          You&apos;re free to skip. Optionals don&apos;t fail your day. But the day only
           qualifies if every skip has a reason.{" "}
           <strong className="text-ink">Write something true.</strong> Lazy reasons
           survive the form, but rarely survive themselves.
@@ -136,7 +136,7 @@ export function SkipReasonModal({
             onClick={onClose}
             className="px-[18px] py-[11px] bg-card text-ink-2 border border-hair rounded-[7px] text-[13px] font-medium cursor-pointer hover:bg-paper transition-colors"
           >
-            Cancel — I&apos;ll do it
+            Cancel, I&apos;ll do it
           </button>
           <div className="flex-1" />
           <button

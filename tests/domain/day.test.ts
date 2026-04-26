@@ -18,7 +18,7 @@ function makeSubtask(overrides: Partial<Subtask> = {}): Subtask {
 function makeCore(overrides: Partial<Core> & { subtasks?: Subtask[] } = {}): Core {
   return {
     id: "core-1",
-    kind: "gym",
+    kind: "body",
     subtasks: [makeSubtask()],
     ...overrides,
   };
@@ -81,7 +81,7 @@ describe("evaluateDay", () => {
     };
     const result = evaluateDay(input, true);
     expect(result.status).toBe("failed");
-    expect(result.reasons).toContain("Core gym incomplete");
+    expect(result.reasons).toContain("Core body incomplete");
   });
 
   it("fails when locked-in optional is missed", () => {
@@ -146,9 +146,9 @@ describe("evaluateDay", () => {
   });
 
   it("handles multiple cores with mixed results", () => {
-    const core1 = makeCore({ id: "c1", kind: "gym", subtasks: [makeSubtask({ id: "s1", core_id: "c1" })] });
-    const core2 = makeCore({ id: "c2", kind: "eating", subtasks: [makeSubtask({ id: "s2", core_id: "c2" })] });
-    const core3 = makeCore({ id: "c3", kind: "coding", subtasks: [makeSubtask({ id: "s3", core_id: "c3" })] });
+    const core1 = makeCore({ id: "c1", kind: "body", subtasks: [makeSubtask({ id: "s1", core_id: "c1" })] });
+    const core2 = makeCore({ id: "c2", kind: "fuel", subtasks: [makeSubtask({ id: "s2", core_id: "c2" })] });
+    const core3 = makeCore({ id: "c3", kind: "craft", subtasks: [makeSubtask({ id: "s3", core_id: "c3" })] });
     const input: DayQualificationInput = {
       scheduledCores: [core1, core2, core3],
       subtaskCompletions: [
