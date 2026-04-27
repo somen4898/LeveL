@@ -56,8 +56,8 @@ export default async function LevelsPage() {
   return (
     <>
       <Topbar
-        crumb="LEVELS · KAIZEN LADDER"
-        sub="Odd tightens · Even unlocks · 3 qualifying days = 1 level"
+        crumb="LEVELS · YOUR PROGRESSION"
+        sub="Each confirmed check-in adjustment earns a level"
         status={`Lv ${padTwo(currentLevel)} / 30`}
         statusKind="ember"
       />
@@ -146,69 +146,56 @@ export default async function LevelsPage() {
           </div>
         </div>
 
-        {/* Full Ladder */}
+        {/* Progression list */}
         <div className="mt-5">
           <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.18em] uppercase text-ink-3">
-            Full ladder · 30 levels
+            Progression · {catalogueData.length} {catalogueData.length === 1 ? "level" : "levels"}{" "}
+            earned
           </span>
-          <div className="mt-3 grid grid-cols-2 border border-hair rounded-[10px] overflow-hidden bg-card">
-            {catalogueData.map((l, i) => {
-              const done = l.level_number <= currentLevel;
-              const isCurrent = l.level_number === currentLevel;
-              const isLeft = i % 2 === 0;
-
-              return (
-                <div
-                  key={l.id}
-                  className={`flex items-center gap-3.5 px-[18px] py-3 ${
-                    i < 28 ? "border-b border-hair-2" : ""
-                  } ${isLeft ? "border-r border-hair-2" : ""} ${
-                    isCurrent ? "bg-ember-bg" : done ? "bg-bone" : ""
-                  }`}
-                >
-                  <span
-                    className={`font-[var(--font-display)] text-[22px] italic w-[38px] ${
-                      done ? "text-ink" : "text-ink-4"
-                    }`}
+          {catalogueData.length === 0 ? (
+            <p className="mt-3 text-[13px] text-ink-3 italic">
+              No levels yet. Your first adjustment comes at the Week 2 check-in.
+            </p>
+          ) : (
+            <div className="mt-3 flex flex-col border border-hair rounded-[10px] overflow-hidden bg-card">
+              {catalogueData.map((l, i) => {
+                const isCurrent = l.level_number === currentLevel;
+                return (
+                  <div
+                    key={l.id}
+                    className={`flex items-center gap-3.5 px-[18px] py-3 ${
+                      i < catalogueData.length - 1 ? "border-b border-hair-2" : ""
+                    } ${isCurrent ? "bg-ember-bg" : "bg-bone"}`}
                   >
-                    {padTwo(l.level_number)}
-                  </span>
-                  <span
-                    className={`font-[var(--font-tactical)] text-[9px] tracking-[0.14em] uppercase px-[7px] py-[3px] rounded font-semibold shrink-0 ${
-                      l.effect_kind === "UNLOCK"
-                        ? done
+                    <span className="font-[var(--font-display)] text-[22px] italic w-[38px] text-ink">
+                      {padTwo(l.level_number)}
+                    </span>
+                    <span
+                      className={`font-[var(--font-tactical)] text-[9px] tracking-[0.14em] uppercase px-[7px] py-[3px] rounded font-semibold shrink-0 ${
+                        l.effect_kind === "UNLOCK"
                           ? "bg-ember text-white"
-                          : "bg-hair text-ink-3"
-                        : done
-                          ? "bg-transparent text-ink border border-ink"
-                          : "bg-transparent text-ink-3 border border-hair"
-                    }`}
-                  >
-                    {l.effect_kind === "TIGHTEN" ? "TGHTN" : "UNLCK"}
-                  </span>
-                  <span className={`flex-1 text-[12.5px] ${done ? "text-ink-2" : "text-ink-4"}`}>
-                    {l.description}
-                  </span>
-                  {isCurrent && (
-                    <span className="font-[var(--font-tactical)] text-[9px] tracking-[0.14em] uppercase px-[7px] py-[3px] bg-ember text-white rounded font-semibold">
-                      YOU
+                          : "bg-transparent text-ink border border-ink"
+                      }`}
+                    >
+                      {l.effect_kind === "TIGHTEN" ? "TGHTN" : "UNLCK"}
                     </span>
-                  )}
-                  {done && !isCurrent && (
-                    <span className="font-[var(--font-tactical)] text-[10px] text-moss font-semibold">
-                      ✓
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                    <span className="flex-1 text-[12.5px] text-ink-2">{l.description}</span>
+                    {isCurrent && (
+                      <span className="font-[var(--font-tactical)] text-[9px] tracking-[0.14em] uppercase px-[7px] py-[3px] bg-ember text-white rounded font-semibold">
+                        YOU
+                      </span>
+                    )}
+                    {!isCurrent && (
+                      <span className="font-[var(--font-tactical)] text-[10px] text-moss font-semibold">
+                        ✓
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-
-        <p className="font-[var(--font-ui)] text-[12px] text-ink-3 leading-[1.55] mt-4">
-          A perfectly compliant user reaches Level 30 around Day 90. A realistic user lands around
-          Level 22–25.
-        </p>
       </div>
     </>
   );
