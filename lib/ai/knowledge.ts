@@ -171,6 +171,127 @@ export const GUIDELINES = {
     } satisfies CitedValue,
   },
 
+  foods: {
+    gain: {
+      title: "Foods that support weight gain",
+      source: "ISSN Position Stands; Helms et al., 2014; general sports nutrition consensus",
+      categories: [
+        {
+          name: "High-quality protein",
+          items: [
+            "Eggs (whole, 6g protein each, complete amino acid profile)",
+            "Chicken thighs (fattier cut, 26g protein per 100g, easier surplus)",
+            "Salmon (20g protein + omega-3s for inflammation recovery)",
+            "Greek yogurt (full fat, 10g protein per 100g, casein-rich for slow release)",
+            "Whole milk (8g protein per 250ml, easy liquid calories)",
+          ],
+        },
+        {
+          name: "Calorie-dense carbs",
+          items: [
+            "White rice (easy to digest post-workout, 130 kcal per 100g cooked)",
+            "Oats (380 kcal per 100g dry, slow-release energy)",
+            "Sweet potatoes (complex carbs, potassium for recovery)",
+            "Bananas (quick energy, 100 kcal each, potassium)",
+            "Whole grain bread (easy vehicle for calories)",
+          ],
+        },
+        {
+          name: "Healthy fats (calorie-dense)",
+          items: [
+            "Peanut butter (588 kcal per 100g, 25g protein, easiest surplus food)",
+            "Almonds (576 kcal per 100g, magnesium for sleep and recovery)",
+            "Olive oil (884 kcal per 100ml, add to anything for easy +200 kcal)",
+            "Avocado (160 kcal each, potassium, healthy monounsaturated fats)",
+            "Dark chocolate 70%+ (small portion, high calorie, antioxidants)",
+          ],
+        },
+        {
+          name: "Convenient surplus meals",
+          items: [
+            "Post-workout shake: milk + whey + banana + peanut butter (500-700 kcal)",
+            "Overnight oats: oats + milk + protein powder + nuts (600+ kcal)",
+            "Rice + chicken thigh + olive oil drizzle (easy 600 kcal plate)",
+          ],
+        },
+      ],
+    },
+    lose: {
+      title: "Foods that support fat loss",
+      source:
+        "Westerterp-Plantenga et al., 2012; Paddon-Jones et al., 2008; general sports nutrition consensus",
+      categories: [
+        {
+          name: "High-satiety protein",
+          items: [
+            "Chicken breast (31g protein per 100g, very lean, high TEF)",
+            "Egg whites (11g protein per 100g, nearly zero fat)",
+            "White fish (cod, tilapia: 20g+ protein, very low calorie)",
+            "Greek yogurt (0% fat, 10g protein per 100g, filling)",
+            "Cottage cheese (low-fat, casein-rich, slow-digesting)",
+          ],
+        },
+        {
+          name: "High-volume, low-calorie vegetables",
+          items: [
+            "Broccoli (34 kcal per 100g, high fiber, very filling)",
+            "Spinach (23 kcal per 100g, iron, volume food)",
+            "Cucumber (15 kcal per 100g, hydration + volume)",
+            "Bell peppers (31 kcal per 100g, vitamin C)",
+            "Cauliflower (25 kcal per 100g, rice/mash substitute)",
+          ],
+        },
+        {
+          name: "Smart carbs (fiber-rich, slow release)",
+          items: [
+            "Lentils (116 kcal per 100g cooked, 9g protein, very satiating)",
+            "Berries (low sugar vs other fruit, high fiber, antioxidants)",
+            "Potatoes (boiled: highest satiety index of any food tested)",
+            "Quinoa (120 kcal per 100g cooked, complete protein)",
+          ],
+        },
+        {
+          name: "Deficit-friendly meals",
+          items: [
+            "Chicken breast + roasted vegetables + small rice portion (400 kcal)",
+            "Large salad with fish + olive oil dressing (350-450 kcal, very filling)",
+            "Egg white omelette with spinach and feta (250 kcal, 30g protein)",
+          ],
+        },
+      ],
+    },
+    maintain: {
+      title: "Foods that support maintenance",
+      source: "General sports nutrition consensus; Mediterranean diet evidence base",
+      categories: [
+        {
+          name: "Balanced protein",
+          items: [
+            "Rotate lean and fatty protein sources throughout the week",
+            "Eggs, chicken, fish, legumes as staples",
+            "Red meat 1-2x/week (iron, B12, zinc)",
+          ],
+        },
+        {
+          name: "Whole food carbs",
+          items: [
+            "Mix of rice, oats, potatoes, whole grains",
+            "Fruit daily (2-3 servings for micronutrients)",
+            "Legumes 3-4x/week (fiber, protein, gut health)",
+          ],
+        },
+        {
+          name: "Essential fats",
+          items: [
+            "Olive oil as primary cooking fat",
+            "Fatty fish 2x/week (EPA/DHA for inflammation)",
+            "Nuts as snacks (handful = ~200 kcal)",
+          ],
+        },
+      ],
+    },
+  },
+
   bodyComposition: {
     bmiAdjustment: {
       threshold: 30,
@@ -227,6 +348,12 @@ RULES:
 }
 
 // For backward compatibility
+// ── Public helper: get food recommendations for a goal ──
+
+export function getFoodRecommendations(goal: "gain" | "lose" | "maintain") {
+  return GUIDELINES.foods[goal];
+}
+
 export const KNOWLEDGE = {
   nutrition: buildNutritionSystemPrompt(),
 } as const;

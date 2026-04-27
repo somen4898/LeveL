@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { StepProps } from "./page";
 import { calculateTargets } from "@/lib/domain/calculator";
+import { getFoodRecommendations } from "@/lib/ai/knowledge";
 
 type GoalType = "gain" | "lose" | "maintain";
 type ActivityType = "sedentary" | "light" | "moderate" | "very_active";
@@ -26,6 +27,43 @@ const EXPERIENCE: { value: ExperienceType; label: string }[] = [
   { value: "intermediate", label: "Intermediate (1-3 years)" },
   { value: "advanced", label: "Advanced (3+ years)" },
 ];
+
+function FoodSection({ goal }: { goal: "gain" | "lose" | "maintain" }) {
+  const foods = getFoodRecommendations(goal);
+  return (
+    <div className="mt-6 bg-card border border-hair rounded-[12px] overflow-hidden">
+      <div className="px-7 py-5 border-b border-hair-2">
+        <span className="font-[var(--font-tactical)] text-[11px] tracking-[0.18em] uppercase text-ink-3">
+          RESEARCH-BACKED NUTRITION
+        </span>
+        <h3 className="font-[var(--font-display)] italic text-[24px] mt-1.5">{foods.title}</h3>
+        <p className="text-[12px] text-ink-3 mt-1">Source: {foods.source}</p>
+      </div>
+      <div className="px-7 py-5 bg-bone">
+        <div className="grid grid-cols-2 gap-6">
+          {foods.categories.map((cat) => (
+            <div key={cat.name}>
+              <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.14em] uppercase text-ember font-semibold">
+                {cat.name}
+              </span>
+              <ul className="mt-2 flex flex-col gap-1.5">
+                {cat.items.map((item, j) => (
+                  <li
+                    key={j}
+                    className="text-[12.5px] leading-[1.5] text-ink-2 flex items-start gap-2"
+                  >
+                    <span className="text-ember mt-[3px] shrink-0">·</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function StepTargets({ state, setState, onNext, onBack }: StepProps) {
   const [computed, setComputed] = useState(false);
@@ -290,155 +328,163 @@ export function StepTargets({ state, setState, onNext, onBack }: StepProps) {
 
       {/* Computed results */}
       {computed && (
-        <div className="mt-6">
-          {aiReasoning && (
-            <div className="mb-4 p-5 bg-bone border border-hair rounded-[10px] border-l-[3px] border-l-ember">
-              <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
-                AI REASONING
-              </span>
-              <p className="font-[var(--font-display)] italic text-[16px] leading-[1.5] text-ink-2">
-                {aiReasoning}
-              </p>
-              {aiWarnings.length > 0 && (
-                <div className="mt-3 flex flex-col gap-1">
-                  {aiWarnings.map((w, i) => (
-                    <span key={i} className="text-[12px] text-rust">
-                      {w}
+        <>
+          <div className="mt-6">
+            {aiReasoning && (
+              <div className="mb-4 p-5 bg-bone border border-hair rounded-[10px] border-l-[3px] border-l-ember">
+                <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+                  AI REASONING
+                </span>
+                <p className="font-[var(--font-display)] italic text-[16px] leading-[1.5] text-ink-2">
+                  {aiReasoning}
+                </p>
+                {aiWarnings.length > 0 && (
+                  <div className="mt-3 flex flex-col gap-1">
+                    {aiWarnings.map((w, i) => (
+                      <span key={i} className="text-[12px] text-rust">
+                        {w}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <span className="font-[var(--font-tactical)] text-[11px] tracking-[0.18em] uppercase text-ink-3 block mb-3">
+              YOUR TARGETS · EDITABLE BEFORE SIGN
+            </span>
+
+            {/* Core I: Body */}
+            <div className="bg-card border border-hair rounded-[12px] overflow-hidden">
+              <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
+                <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">
+                  I
+                </span>
+                <div className="flex flex-col flex-1 gap-1">
+                  <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">
+                    Body
+                  </h3>
+                  <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">
+                    PHYSICAL TRAINING
+                  </span>
+                </div>
+              </div>
+              <div className="px-7 py-5 bg-bone">
+                <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+                  MIN SESSION LENGTH
+                </span>
+                <div className="inline-flex items-baseline gap-2 px-4 py-2.5 bg-card border border-hair rounded-[8px] focus-within:border-ember">
+                  <input
+                    type="number"
+                    value={state.bodyMinutes}
+                    onChange={(e) => setState({ ...state, bodyMinutes: Number(e.target.value) })}
+                    className="w-[80px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[28px] font-semibold text-ink tracking-[-0.02em]"
+                  />
+                  <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">
+                    min
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Core II: Fuel */}
+            <div className="mt-3 bg-card border border-hair rounded-[12px] overflow-hidden">
+              <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
+                <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">
+                  II
+                </span>
+                <div className="flex flex-col flex-1 gap-1">
+                  <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">
+                    Fuel
+                  </h3>
+                  <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">
+                    NUTRITION · DAILY
+                  </span>
+                </div>
+              </div>
+              <div className="px-7 py-5 bg-bone">
+                <div className="grid grid-cols-2 gap-5">
+                  <div>
+                    <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+                      DAILY CALORIES
                     </span>
+                    <div className="inline-flex items-baseline gap-2 px-4 py-2.5 bg-card border border-hair rounded-[8px] focus-within:border-ember">
+                      <input
+                        type="number"
+                        value={state.calorieTarget}
+                        onChange={(e) =>
+                          setState({ ...state, calorieTarget: Number(e.target.value) })
+                        }
+                        className="w-[100px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[28px] font-semibold text-ink tracking-[-0.02em]"
+                      />
+                      <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">
+                        kcal
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+                      DAILY PROTEIN
+                    </span>
+                    <div className="inline-flex items-baseline gap-2 px-4 py-2.5 bg-card border border-hair rounded-[8px] focus-within:border-ember">
+                      <input
+                        type="number"
+                        value={state.proteinTarget}
+                        onChange={(e) =>
+                          setState({ ...state, proteinTarget: Number(e.target.value) })
+                        }
+                        className="w-[80px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[28px] font-semibold text-ink tracking-[-0.02em]"
+                      />
+                      <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">
+                        grams
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Core III: Craft */}
+            <div className="mt-3 bg-card border border-hair rounded-[12px] overflow-hidden">
+              <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
+                <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">
+                  III
+                </span>
+                <div className="flex flex-col flex-1 gap-1">
+                  <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">
+                    Craft
+                  </h3>
+                  <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">
+                    DELIBERATE PRACTICE · CHANGEABLE MID-RUN
+                  </span>
+                </div>
+              </div>
+              <div className="px-7 py-5 bg-bone">
+                <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+                  CHOOSE YOUR MODALITY
+                </span>
+                <div className="grid grid-cols-2 gap-3 mt-2">
+                  {state.craftSubtasks.map((sub, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 px-4 py-3.5 bg-ink text-bone border border-ink rounded-[8px]"
+                    >
+                      <span className="w-5 h-5 rounded-[5px] bg-ember border-[1.5px] border-ember flex items-center justify-center text-white text-[11px] font-bold shrink-0">
+                        ✓
+                      </span>
+                      <span className="text-[13px] leading-[1.4]">{sub.label}</span>
+                    </div>
                   ))}
                 </div>
-              )}
-            </div>
-          )}
-
-          <span className="font-[var(--font-tactical)] text-[11px] tracking-[0.18em] uppercase text-ink-3 block mb-3">
-            YOUR TARGETS · EDITABLE BEFORE SIGN
-          </span>
-
-          {/* Core I: Body */}
-          <div className="bg-card border border-hair rounded-[12px] overflow-hidden">
-            <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
-              <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">
-                I
-              </span>
-              <div className="flex flex-col flex-1 gap-1">
-                <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">Body</h3>
-                <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">
-                  PHYSICAL TRAINING
-                </span>
-              </div>
-            </div>
-            <div className="px-7 py-5 bg-bone">
-              <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
-                MIN SESSION LENGTH
-              </span>
-              <div className="inline-flex items-baseline gap-2 px-4 py-2.5 bg-card border border-hair rounded-[8px] focus-within:border-ember">
-                <input
-                  type="number"
-                  value={state.bodyMinutes}
-                  onChange={(e) => setState({ ...state, bodyMinutes: Number(e.target.value) })}
-                  className="w-[80px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[28px] font-semibold text-ink tracking-[-0.02em]"
-                />
-                <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">
-                  min
-                </span>
+                <p className="mt-3 text-[12px] text-ink-3 leading-[1.5]">
+                  Craft subtasks can be changed mid-run with a reason. The other Cores lock on sign.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Core II: Fuel */}
-          <div className="mt-3 bg-card border border-hair rounded-[12px] overflow-hidden">
-            <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
-              <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">
-                II
-              </span>
-              <div className="flex flex-col flex-1 gap-1">
-                <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">Fuel</h3>
-                <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">
-                  NUTRITION · DAILY
-                </span>
-              </div>
-            </div>
-            <div className="px-7 py-5 bg-bone">
-              <div className="grid grid-cols-2 gap-5">
-                <div>
-                  <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
-                    DAILY CALORIES
-                  </span>
-                  <div className="inline-flex items-baseline gap-2 px-4 py-2.5 bg-card border border-hair rounded-[8px] focus-within:border-ember">
-                    <input
-                      type="number"
-                      value={state.calorieTarget}
-                      onChange={(e) =>
-                        setState({ ...state, calorieTarget: Number(e.target.value) })
-                      }
-                      className="w-[100px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[28px] font-semibold text-ink tracking-[-0.02em]"
-                    />
-                    <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">
-                      kcal
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
-                    DAILY PROTEIN
-                  </span>
-                  <div className="inline-flex items-baseline gap-2 px-4 py-2.5 bg-card border border-hair rounded-[8px] focus-within:border-ember">
-                    <input
-                      type="number"
-                      value={state.proteinTarget}
-                      onChange={(e) =>
-                        setState({ ...state, proteinTarget: Number(e.target.value) })
-                      }
-                      className="w-[80px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[28px] font-semibold text-ink tracking-[-0.02em]"
-                    />
-                    <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">
-                      grams
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Core III: Craft */}
-          <div className="mt-3 bg-card border border-hair rounded-[12px] overflow-hidden">
-            <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
-              <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">
-                III
-              </span>
-              <div className="flex flex-col flex-1 gap-1">
-                <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">
-                  Craft
-                </h3>
-                <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">
-                  DELIBERATE PRACTICE · CHANGEABLE MID-RUN
-                </span>
-              </div>
-            </div>
-            <div className="px-7 py-5 bg-bone">
-              <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
-                CHOOSE YOUR MODALITY
-              </span>
-              <div className="grid grid-cols-2 gap-3 mt-2">
-                {state.craftSubtasks.map((sub, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 px-4 py-3.5 bg-ink text-bone border border-ink rounded-[8px]"
-                  >
-                    <span className="w-5 h-5 rounded-[5px] bg-ember border-[1.5px] border-ember flex items-center justify-center text-white text-[11px] font-bold shrink-0">
-                      ✓
-                    </span>
-                    <span className="text-[13px] leading-[1.4]">{sub.label}</span>
-                  </div>
-                ))}
-              </div>
-              <p className="mt-3 text-[12px] text-ink-3 leading-[1.5]">
-                Craft subtasks can be changed mid-run with a reason. The other Cores lock on sign.
-              </p>
-            </div>
-          </div>
-        </div>
+          <FoodSection goal={state.goal} />
+        </>
       )}
 
       {/* Nav */}
