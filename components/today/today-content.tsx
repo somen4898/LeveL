@@ -150,6 +150,20 @@ export function TodayContent({
 
   return (
     <>
+      {/* Check-in banner */}
+      {currentDay >= 7 && currentDay % 7 <= 1 && (
+        <a
+          href="/check-in"
+          className="flex items-center gap-3 p-4 mb-4 bg-[#fdf0e4] border border-ember-l rounded-[10px] text-ember-d text-[13px] font-medium no-underline hover:bg-[#f9e0cc] transition-colors"
+        >
+          <span className="w-2 h-2 rounded-full bg-ember" />
+          Weekly check-in available
+          <span className="ml-auto font-[var(--font-tactical)] text-[10px] tracking-[0.14em] uppercase">
+            WEEK {Math.ceil(currentDay / 7)}
+          </span>
+        </a>
+      )}
+
       {/* Hero: today's contract status */}
       <div className="bg-card border border-hair rounded-[10px] p-7 shadow-[var(--shadow-md)]">
         <div className="flex items-start justify-between">

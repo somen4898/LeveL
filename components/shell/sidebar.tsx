@@ -2,14 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  List,
-  Gift,
-  TrendingUp,
-  BookOpen,
-  Settings,
-} from "lucide-react";
+import { Home, List, Gift, TrendingUp, BookOpen, Scale, Settings } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/today", label: "Today", icon: Home },
@@ -17,6 +10,7 @@ const NAV_ITEMS = [
   { href: "/reward-vault", label: "Reward Vault", icon: Gift },
   { href: "/levels", label: "Levels", icon: TrendingUp },
   { href: "/codex", label: "Codex", icon: BookOpen },
+  { href: "/check-in", label: "Check-in", icon: Scale },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
@@ -63,16 +57,12 @@ export function Sidebar({
               key={href}
               href={href}
               className={`flex items-center gap-[11px] px-3 py-2.5 rounded-[7px] mb-[3px] text-[13px] font-medium transition-colors ${
-                isActive
-                  ? "bg-ink text-bone"
-                  : "text-ink-2 hover:bg-paper-2"
+                isActive ? "bg-ink text-bone" : "text-ink-2 hover:bg-paper-2"
               }`}
             >
               <Icon size={16} strokeWidth={1.6} />
               {label}
-              {isActive && (
-                <span className="ml-auto w-1 h-1 rounded-full bg-ember" />
-              )}
+              {isActive && <span className="ml-auto w-1 h-1 rounded-full bg-ember" />}
             </Link>
           );
         })}
