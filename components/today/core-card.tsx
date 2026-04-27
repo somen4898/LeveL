@@ -37,15 +37,29 @@ export function CoreCard({ numeral, name, target, done, subtasks, completions, o
             {target}
           </span>
         </div>
-        {done && (
+        {done ? (
           <span className="font-[var(--font-tactical)] text-[9px] tracking-[0.14em] uppercase px-[7px] py-[3px] bg-ember text-white rounded font-semibold">
             DONE
           </span>
+        ) : (
+          <button
+            onClick={() => {
+              subtasks.forEach((sub) => {
+                const isComplete = completions.some(
+                  (c) => c.subtask_id === sub.id && c.completed
+                );
+                if (!isComplete) onToggle(sub.id, true);
+              });
+            }}
+            className="px-3 py-1.5 bg-ink text-bone rounded-[6px] text-[11px] font-medium cursor-pointer hover:bg-black transition-colors shrink-0"
+          >
+            Mark complete
+          </button>
         )}
       </div>
 
       <hr
-        className={`border-none h-px my-3.5 ${
+        className={`border-none h-px my-3 ${
           done ? "bg-[#3a342d]" : "bg-hair-2"
         }`}
       />
@@ -76,23 +90,6 @@ export function CoreCard({ numeral, name, target, done, subtasks, completions, o
           </div>
         );
       })}
-
-      {!done && (
-        <button
-          onClick={() => {
-            // Mark all subtasks as complete
-            subtasks.forEach((sub) => {
-              const isComplete = completions.some(
-                (c) => c.subtask_id === sub.id && c.completed
-              );
-              if (!isComplete) onToggle(sub.id, true);
-            });
-          }}
-          className="w-full mt-3.5 py-2 bg-ink text-bone rounded-[7px] text-[12px] font-medium cursor-pointer hover:bg-black transition-colors"
-        >
-          Mark complete
-        </button>
-      )}
     </div>
   );
 }

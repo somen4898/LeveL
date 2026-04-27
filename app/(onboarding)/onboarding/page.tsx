@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { StepWelcome } from "./step-01-welcome";
 import { StepWhy } from "./step-02-why";
 import { StepTargets } from "./step-03-targets";
@@ -8,6 +9,7 @@ import { StepSchedule } from "./step-04-schedule";
 import { StepSign } from "./step-05-sign";
 
 export interface OnboardingState {
+  displayName: string;
   // The Why
   anchorText: string;
   // Targets
@@ -30,6 +32,7 @@ export interface OnboardingState {
 }
 
 const INITIAL_STATE: OnboardingState = {
+  displayName: "",
   anchorText: "",
   calorieTarget: 2950,
   proteinTarget: 145,
@@ -70,6 +73,24 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(0);
   const [state, setState] = useState<OnboardingState>(INITIAL_STATE);
 
+  useEffect(() => {
+    async function fetchDisplayName() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("id", user.id)
+        .single();
+      const profile = data as { display_name: string | null } | null;
+      if (profile?.display_name) {
+        setState((s) => ({ ...s, displayName: profile.display_name! }));
+      }
+    }
+    fetchDisplayName();
+  }, []);
+
   const CurrentStep = STEPS[step];
 
   return (
@@ -105,15 +126,28 @@ export default function OnboardingPage() {
         </div>
 
         {/* Step content */}
-        <div className="mt-6">
+        <div
+          key={step}
+          className="mt-6"
+          style={{
+            animation: "stepReveal 0.6s cubic-bezier(0.2,0.8,0.2,1) forwards",
+          }}
+        >
           <CurrentStep
             state={state}
             setState={setState}
-            onNext={() => setStep((s) => Math.min(s + 1, 4))}
-            onBack={() => setStep((s) => Math.max(s - 1, 0))}
+            onNext={() => { setStep((s) => Math.min(s + 1, 4)); window.scrollTo(0, 0); }}
+            onBack={() => { setStep((s) => Math.max(s - 1, 0)); window.scrollTo(0, 0); }}
             step={step}
           />
         </div>
+
+        <style>{`
+          @keyframes stepReveal {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
       </div>
     </div>
   );

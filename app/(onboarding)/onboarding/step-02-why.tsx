@@ -1,11 +1,42 @@
 "use client";
 
+import { useState, useCallback, useRef, useEffect } from "react";
 import type { StepProps } from "./page";
 
 const MIN_ANCHOR = 100;
 
 export function StepWhy({ state, setState, onNext, onBack }: StepProps) {
-  const len = state.anchorText.length;
+  const [localText, setLocalText] = useState(state.anchorText);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync local -> parent with debounce
+  const syncToParent = useCallback((text: string) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setState({ ...state, anchorText: text });
+    }, 300);
+  }, [state, setState]);
+
+  // Also sync on unmount (step change)
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      // Sync immediately on unmount via ref
+    };
+  }, []);
+
+  function handleChange(text: string) {
+    setLocalText(text);
+    syncToParent(text);
+  }
+
+  // Sync on blur immediately
+  function handleBlur() {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setState({ ...state, anchorText: localText });
+  }
+
+  const len = localText.length;
   const pct = Math.min(100, (len / MIN_ANCHOR) * 100);
   const met = len >= MIN_ANCHOR;
 
@@ -48,8 +79,9 @@ export function StepWhy({ state, setState, onNext, onBack }: StepProps) {
           className="relative z-[1] bg-bone rounded-[10px] p-7 border-2 border-transparent transition-all duration-300 focus-within:border-ember focus-within:shadow-[0_0_0_6px_rgba(196,98,45,0.12)]"
         >
           <textarea
-            value={state.anchorText}
-            onChange={(e) => setState({ ...state, anchorText: e.target.value })}
+            value={localText}
+            onChange={(e) => handleChange(e.target.value)}
+            onBlur={handleBlur}
             placeholder="Because last year I watched myself become someone I do not respect, and I refuse to spend another ninety days proving that pattern can hold..."
             className="w-full border-none bg-transparent outline-none resize-none font-[var(--font-display)] italic text-[26px] leading-[1.4] text-ink min-h-[140px] placeholder:text-ink-4"
           />
@@ -93,7 +125,7 @@ export function StepWhy({ state, setState, onNext, onBack }: StepProps) {
           NEXT: STEP 03 · TARGETS
         </span>
         <button
-          onClick={onNext}
+          onClick={() => { setState({ ...state, anchorText: localText }); onNext(); }}
           disabled={!met}
           className="inline-flex items-center gap-2.5 px-[22px] py-[13px] bg-ember text-white border border-ember rounded-[8px] text-[14px] font-medium cursor-pointer shadow-[0_1px_0_#a04e1f,0_4px_16px_rgba(196,98,45,0.3)] hover:bg-ember-d hover:-translate-y-px transition-all disabled:opacity-40 disabled:cursor-not-allowed"
         >

@@ -125,7 +125,7 @@ export function StepSign({ state, setState, onBack }: StepProps) {
           </div>
           <div className="bg-ink text-bone rounded-[10px] p-[24px_28px]">
             <div className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-4 mb-1.5">SIGNED BY</div>
-            <div className="font-[var(--font-tactical)] text-[22px] font-semibold">@player_one</div>
+            <div className="font-[var(--font-tactical)] text-[22px] font-semibold">@{state.displayName || "player"}</div>
             <div className="mt-[22px] pt-[22px] border-t border-[#2a2520]">
               <div className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-4 mb-2.5">YOUR ANCHOR · WRITTEN ON STEP 02</div>
               <p className="font-[var(--font-display)] italic text-[22px] leading-[1.45]">
@@ -268,7 +268,7 @@ export function StepSign({ state, setState, onBack }: StepProps) {
           </button>
 
           <div className="relative z-[2] mt-[22px] flex justify-center gap-2.5 flex-wrap font-[var(--font-tactical)] text-[10px] tracking-[0.2em] uppercase text-ink-4">
-            <span className="px-2.5 py-1 border border-ember rounded-full text-ember-l">IRREVERSIBLE</span>
+            <span className="px-2.5 py-1 border border-[#2a2520] rounded-full">IRREVERSIBLE</span>
             <span className="px-2.5 py-1 border border-[#2a2520] rounded-full">CORES LOCK</span>
             <span className="px-2.5 py-1 border border-[#2a2520] rounded-full">TARGETS LOCK</span>
             <span className="px-2.5 py-1 border border-[#2a2520] rounded-full">SCHEDULE LOCKS</span>
