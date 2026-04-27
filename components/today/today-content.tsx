@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useOptimistic, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { CoreCard } from "./core-card";
 import { OptionalRow } from "./optional-row";
 import { RewardWindowStrip } from "./reward-window-strip";
 import { SkipReasonModal } from "@/components/modals/skip-reason-modal";
-import { DayStatusPill } from "./day-status-pill";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { getActiveRewardWindow } from "@/lib/domain/chain";
@@ -14,9 +13,28 @@ import { romanNumeral, padTwo } from "@/lib/utils/format";
 interface Props {
   cores: { id: string; kind: string; schedule_days: number[] }[];
   scheduledCores: { id: string; kind: string; schedule_days: number[] }[];
-  subtasks: { id: string; core_id: string; label: string; measurement: string; target_numeric: number | null; unit: string | null; active_from_level: number; active_until_level: number | null }[];
-  completions: { id: string; subtask_id: string | null; optional_id: string | null; completed: boolean }[];
-  optionals: { id: string; label: string; consecutive_skip_count: number; is_locked_in_today: boolean }[];
+  subtasks: {
+    id: string;
+    core_id: string;
+    label: string;
+    measurement: string;
+    target_numeric: number | null;
+    unit: string | null;
+    active_from_level: number;
+    active_until_level: number | null;
+  }[];
+  completions: {
+    id: string;
+    subtask_id: string | null;
+    optional_id: string | null;
+    completed: boolean;
+  }[];
+  optionals: {
+    id: string;
+    label: string;
+    consecutive_skip_count: number;
+    is_locked_in_today: boolean;
+  }[];
   reasoningEntries: { id: string; optional_id: string; reason_text: string }[];
   rewards: { id: string; scheduled_day: number; tier: string; name: string; status: string }[];
   dailyLogId: string;
@@ -29,7 +47,6 @@ interface Props {
 }
 
 export function TodayContent({
-  cores,
   scheduledCores,
   subtasks,
   completions,
@@ -45,7 +62,7 @@ export function TodayContent({
   userId,
 }: Props) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [skipModal, setSkipModal] = useState<{ optionalId: string; label: string } | null>(null);
 
   const coresComplete = scheduledCores.filter((core) => {
@@ -55,9 +72,7 @@ export function TodayContent({
         s.active_from_level <= currentLevel &&
         (s.active_until_level === null || s.active_until_level >= currentLevel)
     );
-    return coreSubs.every((s) =>
-      completions.some((c) => c.subtask_id === s.id && c.completed)
-    );
+    return coreSubs.every((s) => completions.some((c) => c.subtask_id === s.id && c.completed));
   }).length;
 
   async function toggleSubtask(subtaskId: string, completed: boolean) {
@@ -65,10 +80,7 @@ export function TodayContent({
     // Upsert completion
     const existing = completions.find((c) => c.subtask_id === subtaskId);
     if (existing) {
-      await supabase
-        .from("task_completions")
-        .update({ completed })
-        .eq("id", existing.id);
+      await supabase.from("task_completions").update({ completed }).eq("id", existing.id);
     } else {
       await supabase.from("task_completions").insert({
         daily_log_id: dailyLogId,
@@ -85,10 +97,7 @@ export function TodayContent({
     const supabase = createClient();
     const existing = completions.find((c) => c.optional_id === optionalId);
     if (existing) {
-      await supabase
-        .from("task_completions")
-        .update({ completed: true })
-        .eq("id", existing.id);
+      await supabase.from("task_completions").update({ completed: true }).eq("id", existing.id);
     } else {
       await supabase.from("task_completions").insert({
         daily_log_id: dailyLogId,
@@ -116,22 +125,28 @@ export function TodayContent({
       })
     : Array(18).fill("f");
 
-  const nextReward = rewards.find(
-    (r) => r.status !== "claimed" && r.scheduled_day >= currentDay
-  );
+  const nextReward = rewards.find((r) => r.status !== "claimed" && r.scheduled_day >= currentDay);
 
   const daysLeft = 90 - currentDay + 1;
-  const endDateFormatted = new Date(endDate).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-  }).toUpperCase();
+  const endDateFormatted = new Date(endDate)
+    .toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+    })
+    .toUpperCase();
 
   // Compute hours left in day
   const now = new Date();
   const endOfDay = new Date(now);
   endOfDay.setHours(23, 59, 0, 0);
-  const hoursLeft = Math.max(0, Math.floor((endOfDay.getTime() - now.getTime()) / (1000 * 60 * 60)));
-  const minsLeft = Math.max(0, Math.floor(((endOfDay.getTime() - now.getTime()) % (1000 * 60 * 60)) / (1000 * 60)));
+  const hoursLeft = Math.max(
+    0,
+    Math.floor((endOfDay.getTime() - now.getTime()) / (1000 * 60 * 60))
+  );
+  const minsLeft = Math.max(
+    0,
+    Math.floor(((endOfDay.getTime() - now.getTime()) % (1000 * 60 * 60)) / (1000 * 60))
+  );
 
   return (
     <>
@@ -147,9 +162,13 @@ export function TodayContent({
                 "All cores closed."
               ) : (
                 <>
-                  {scheduledCores.length - coresComplete === 1 ? "One core" : `${scheduledCores.length - coresComplete} cores`} left.{" "}
+                  {scheduledCores.length - coresComplete === 1
+                    ? "One core"
+                    : `${scheduledCores.length - coresComplete} cores`}{" "}
+                  left.{" "}
                   <em className="italic text-ink-3">
-                    The day qualifies when all {scheduledCores.length === 3 ? "three" : scheduledCores.length} close.
+                    The day qualifies when all{" "}
+                    {scheduledCores.length === 3 ? "three" : scheduledCores.length} close.
                   </em>
                 </>
               )}
@@ -183,7 +202,13 @@ export function TodayContent({
                 key={core.id}
                 numeral={romanNumeral(i + 1)}
                 name={core.kind.charAt(0).toUpperCase() + core.kind.slice(1)}
-                target={core.kind === "body" ? "Structured lift · 45 min" : core.kind === "fuel" ? "Surplus + protein" : "LeetCode OR 60-min focus"}
+                target={
+                  core.kind === "body"
+                    ? "Structured lift · 45 min"
+                    : core.kind === "fuel"
+                      ? "Surplus + protein"
+                      : "LeetCode OR 60-min focus"
+                }
                 done={allDone}
                 subtasks={coreSubs}
                 completions={completions}
@@ -213,12 +238,8 @@ export function TodayContent({
               </p>
             ) : (
               optionals.map((opt, i) => {
-                const done = completions.some(
-                  (c) => c.optional_id === opt.id && c.completed
-                );
-                const hasReason = reasoningEntries.some(
-                  (r) => r.optional_id === opt.id
-                );
+                const done = completions.some((c) => c.optional_id === opt.id && c.completed);
+                const hasReason = reasoningEntries.some((r) => r.optional_id === opt.id);
 
                 return (
                   <OptionalRow
@@ -242,7 +263,11 @@ export function TodayContent({
         <div className="bg-card border border-hair rounded-[10px] p-[22px_26px] shadow-[var(--shadow-card)]">
           <RewardWindowStrip
             cells={windowDays as ("q" | "m" | "t" | "f")[]}
-            label={activeWindow ? `Reward window · ${activeWindow.windowStart} → ${activeWindow.windowEnd}` : "No active window"}
+            label={
+              activeWindow
+                ? `Reward window · ${activeWindow.windowStart} → ${activeWindow.windowEnd}`
+                : "No active window"
+            }
             sub={activeWindow ? `${qualifyingDays} of 18 days · need 15 to claim` : ""}
           />
           <hr className="border-none h-px bg-hair-2 my-4" />
@@ -252,7 +277,9 @@ export function TodayContent({
                 NEXT REWARD
               </span>
               <span className="text-[14px] font-semibold mt-[3px]">
-                {nextReward ? `Day ${nextReward.scheduled_day} · ${nextReward.name}` : "All claimed"}
+                {nextReward
+                  ? `Day ${nextReward.scheduled_day} · ${nextReward.name}`
+                  : "All claimed"}
               </span>
             </div>
             <div className="flex-1" />
@@ -273,10 +300,34 @@ export function TodayContent({
       {/* Stat row */}
       <div className="mt-4 grid grid-cols-4 gap-3">
         {[
-          { k: "QUALIFYING DAYS", v: String(qualifyingDays), sub: `OF ${currentDay} · ${currentDay > 0 ? Math.round((qualifyingDays / currentDay) * 100) : 0}%`, pct: currentDay > 0 ? (qualifyingDays / currentDay) * 100 : 0, color: "bg-ember" },
-          { k: "CURRENT WINDOW", v: `${qualifyingDays}/15`, sub: `NEED ${Math.max(0, 15 - qualifyingDays)} MORE`, pct: Math.min(100, (qualifyingDays / 15) * 100), color: "bg-ink" },
-          { k: "LEVEL", v: padTwo(currentLevel), sub: `${levelStreak} / 3 TO ${padTwo(currentLevel + 1)}`, pct: (levelStreak / 3) * 100, color: "bg-moss" },
-          { k: "DAYS LEFT", v: String(daysLeft), sub: `RUN ENDS ${endDateFormatted}`, pct: null, color: null },
+          {
+            k: "QUALIFYING DAYS",
+            v: String(qualifyingDays),
+            sub: `OF ${currentDay} · ${currentDay > 0 ? Math.round((qualifyingDays / currentDay) * 100) : 0}%`,
+            pct: currentDay > 0 ? (qualifyingDays / currentDay) * 100 : 0,
+            color: "bg-ember",
+          },
+          {
+            k: "CURRENT WINDOW",
+            v: `${qualifyingDays}/15`,
+            sub: `NEED ${Math.max(0, 15 - qualifyingDays)} MORE`,
+            pct: Math.min(100, (qualifyingDays / 15) * 100),
+            color: "bg-ink",
+          },
+          {
+            k: "LEVEL",
+            v: padTwo(currentLevel),
+            sub: `${levelStreak} / 3 TO ${padTwo(currentLevel + 1)}`,
+            pct: (levelStreak / 3) * 100,
+            color: "bg-moss",
+          },
+          {
+            k: "DAYS LEFT",
+            v: String(daysLeft),
+            sub: `RUN ENDS ${endDateFormatted}`,
+            pct: null,
+            color: null,
+          },
         ].map(({ k, v, sub, pct, color }, i) => (
           <div key={i} className="bg-bone border border-hair-2 rounded-[10px] p-5">
             <span className="font-[var(--font-tactical)] text-[10px] text-ink-3 tracking-[0.04em]">

@@ -4,7 +4,9 @@ import { Topbar } from "@/components/shell/topbar";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
@@ -25,7 +27,9 @@ export default async function SettingsPage() {
 
   const runData = run as { start_date: string; current_level: number } | null;
   const currentDay = runData?.start_date
-    ? Math.floor((Date.now() - new Date(runData.start_date).getTime()) / (1000 * 60 * 60 * 24)) + 1
+    ? Math.floor(
+        (new Date().getTime() - new Date(runData.start_date).getTime()) / (1000 * 60 * 60 * 24)
+      ) + 1
     : 1;
   const daysLeft = 90 - currentDay + 1;
 
@@ -34,9 +38,18 @@ export default async function SettingsPage() {
   const coresArr = (cores ?? []) as { id: string; kind: string; schedule_days: number[] }[];
 
   // Fetch subtasks for targets
-  const coreIds = coresArr.map(c => c.id);
-  const { data: subtasks } = await supabase.from("subtasks").select("*").in("core_id", coreIds.length > 0 ? coreIds : ["none"]);
-  const subtasksArr = (subtasks ?? []) as { id: string; core_id: string; label: string; target_numeric: number | null; unit: string | null }[];
+  const coreIds = coresArr.map((c) => c.id);
+  const { data: subtasks } = await supabase
+    .from("subtasks")
+    .select("*")
+    .in("core_id", coreIds.length > 0 ? coreIds : ["none"]);
+  const subtasksArr = (subtasks ?? []) as {
+    id: string;
+    core_id: string;
+    label: string;
+    target_numeric: number | null;
+    unit: string | null;
+  }[];
 
   // Fetch rewards
   const { data: rewards } = await supabase
@@ -45,20 +58,36 @@ export default async function SettingsPage() {
     .eq("run_id", runId)
     .order("scheduled_day");
 
-  const rewardsArr = (rewards ?? []) as { id: string; scheduled_day: number; name: string; price_amount: number | null }[];
+  const rewardsArr = (rewards ?? []) as {
+    id: string;
+    scheduled_day: number;
+    name: string;
+    price_amount: number | null;
+  }[];
 
-  const bodyCore = coresArr.find(c => c.kind === "body");
-  const fuelCore = coresArr.find(c => c.kind === "fuel");
-  const craftCore = coresArr.find(c => c.kind === "craft");
+  const bodyCore = coresArr.find((c) => c.kind === "body");
+  const fuelCore = coresArr.find((c) => c.kind === "fuel");
+  const craftCore = coresArr.find((c) => c.kind === "craft");
 
-  const bodySubs = subtasksArr.filter(s => s.core_id === bodyCore?.id);
-  const fuelSubs = subtasksArr.filter(s => s.core_id === fuelCore?.id);
-  const craftSubs = subtasksArr.filter(s => s.core_id === craftCore?.id);
+  const bodySubs = subtasksArr.filter((s) => s.core_id === bodyCore?.id);
+  const fuelSubs = subtasksArr.filter((s) => s.core_id === fuelCore?.id);
+  const craftSubs = subtasksArr.filter((s) => s.core_id === craftCore?.id);
 
   const lockedItems = [
-    { k: "Core I: Body", v: `${bodyCore?.schedule_days.length ?? 0}× / week · ${bodySubs.map(s => s.label).join(", ")}` },
-    { k: "Core II: Fuel", v: fuelSubs.map(s => `${s.label}${s.target_numeric ? ` ≥ ${s.target_numeric}${s.unit ?? ""}` : ""}`).join(" · ") },
-    { k: "Core III: Craft", v: `${craftCore?.schedule_days.length ?? 0}× / week · ${craftSubs.map(s => s.label).join(" or ")}` },
+    {
+      k: "Core I: Body",
+      v: `${bodyCore?.schedule_days.length ?? 0}× / week · ${bodySubs.map((s) => s.label).join(", ")}`,
+    },
+    {
+      k: "Core II: Fuel",
+      v: fuelSubs
+        .map((s) => `${s.label}${s.target_numeric ? ` ≥ ${s.target_numeric}${s.unit ?? ""}` : ""}`)
+        .join(" · "),
+    },
+    {
+      k: "Core III: Craft",
+      v: `${craftCore?.schedule_days.length ?? 0}× / week · ${craftSubs.map((s) => s.label).join(" or ")}`,
+    },
     ...rewardsArr.map((r, i) => ({
       k: `Reward ${String(i + 1).padStart(2, "0")}: Day ${r.scheduled_day}`,
       v: `${r.name}${r.price_amount ? ` · ₹${r.price_amount.toLocaleString()}` : ""}`,
@@ -67,7 +96,11 @@ export default async function SettingsPage() {
 
   return (
     <>
-      <Topbar crumb="SETTINGS" sub="What you can change · what is locked" status={`${daysLeft} days left`} />
+      <Topbar
+        crumb="SETTINGS"
+        sub="What you can change · what is locked"
+        status={`${daysLeft} days left`}
+      />
       <div className="flex-1 overflow-auto p-8 pb-12">
         {/* Contract notice */}
         <div className="bg-ink text-bone rounded-[10px] p-[20px_26px]">
@@ -78,8 +111,8 @@ export default async function SettingsPage() {
                 The contract holds
               </span>
               <p className="font-[var(--font-display)] italic text-[18px] mt-1.5 leading-[1.4]">
-                Cores, targets, and reward picks are locked for the remaining {daysLeft} days.
-                This is the friction that makes the system work, not a bug.
+                Cores, targets, and reward picks are locked for the remaining {daysLeft} days. This
+                is the friction that makes the system work, not a bug.
               </p>
             </div>
           </div>
@@ -117,7 +150,12 @@ export default async function SettingsPage() {
           {[
             { k: "Daily check-in time", v: profileData?.day_close_time ?? "23:59", type: "edit" },
             { k: "Skip-reason min length", v: "50 chars", type: "edit" },
-            { k: "Push reminders", v: "Cores · Optionals · Window-close", type: "toggle", on: true },
+            {
+              k: "Push reminders",
+              v: "Cores · Optionals · Window-close",
+              type: "toggle",
+              on: true,
+            },
             { k: "End-of-day digest", v: "Email · 22:30", type: "toggle", on: false },
             { k: "Sound on check-off", v: "Off", type: "toggle", on: false },
           ].map((item, i) => (
@@ -163,7 +201,8 @@ export default async function SettingsPage() {
             <div className="flex flex-col flex-1">
               <span className="text-[13.5px] font-semibold text-rust">Abandon Run 01</span>
               <p className="font-[var(--font-ui)] text-[12px] text-[#7a4530] leading-[1.5] mt-1">
-                Run archives at day {currentDay}. Unclaimed rewards will not unlock. Your level is preserved.
+                Run archives at day {currentDay}. Unclaimed rewards will not unlock. Your level is
+                preserved.
               </p>
             </div>
             <button className="px-3 py-[7px] bg-card border border-rust text-rust rounded-[6px] text-[11.5px] font-medium cursor-pointer hover:bg-[#fbf3ed] transition-colors">

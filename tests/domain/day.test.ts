@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { evaluateDay, isSubtaskActiveAtLevel } from "@/lib/domain/day";
-import type { DayQualificationInput, Core, Optional, TaskCompletion, ReasoningEntry, Subtask } from "@/lib/domain/day";
+import type { DayQualificationInput, Core, Optional, Subtask } from "@/lib/domain/day";
 
 function makeSubtask(overrides: Partial<Subtask> = {}): Subtask {
   return {
@@ -85,7 +85,11 @@ describe("evaluateDay", () => {
   });
 
   it("fails when locked-in optional is missed", () => {
-    const lockedOpt = makeOptional({ id: "opt-locked", is_locked_in_today: true, consecutive_skip_count: 3 });
+    const lockedOpt = makeOptional({
+      id: "opt-locked",
+      is_locked_in_today: true,
+      consecutive_skip_count: 3,
+    });
     const input: DayQualificationInput = {
       scheduledCores: [makeCore()],
       subtaskCompletions: [{ subtask_id: "st-1", optional_id: null, completed: true }],
@@ -146,9 +150,21 @@ describe("evaluateDay", () => {
   });
 
   it("handles multiple cores with mixed results", () => {
-    const core1 = makeCore({ id: "c1", kind: "body", subtasks: [makeSubtask({ id: "s1", core_id: "c1" })] });
-    const core2 = makeCore({ id: "c2", kind: "fuel", subtasks: [makeSubtask({ id: "s2", core_id: "c2" })] });
-    const core3 = makeCore({ id: "c3", kind: "craft", subtasks: [makeSubtask({ id: "s3", core_id: "c3" })] });
+    const core1 = makeCore({
+      id: "c1",
+      kind: "body",
+      subtasks: [makeSubtask({ id: "s1", core_id: "c1" })],
+    });
+    const core2 = makeCore({
+      id: "c2",
+      kind: "fuel",
+      subtasks: [makeSubtask({ id: "s2", core_id: "c2" })],
+    });
+    const core3 = makeCore({
+      id: "c3",
+      kind: "craft",
+      subtasks: [makeSubtask({ id: "s3", core_id: "c3" })],
+    });
     const input: DayQualificationInput = {
       scheduledCores: [core1, core2, core3],
       subtaskCompletions: [

@@ -26,14 +26,14 @@ interface Props {
   userId: string;
 }
 
-export function RewardVaultContent({ rewards, currentDay, qualifiedDays, runId, userId }: Props) {
+export function RewardVaultContent({ rewards, currentDay, qualifiedDays }: Props) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [claimModal, setClaimModal] = useState<Reward | null>(null);
 
   function getQualifyingInWindow(scheduledDay: number): number {
     const w = getWindowForDay(scheduledDay);
-    return qualifiedDays.filter(d => d >= w.windowStart && d <= w.windowEnd).length;
+    return qualifiedDays.filter((d) => d >= w.windowStart && d <= w.windowEnd).length;
   }
 
   async function handleClaim(rewardId: string) {
@@ -75,7 +75,9 @@ export function RewardVaultContent({ rewards, currentDay, qualifiedDays, runId, 
           {rewards.map((r) => {
             const pct = (r.scheduled_day / 90) * 100;
             const isClaimed = r.status === "claimed";
-            const isQual = r.status === "qualifying" || (getQualifyingInWindow(r.scheduled_day) > 0 && !isClaimed);
+            const isQual =
+              r.status === "qualifying" ||
+              (getQualifyingInWindow(r.scheduled_day) > 0 && !isClaimed);
             return (
               <div
                 key={r.id}
@@ -108,8 +110,10 @@ export function RewardVaultContent({ rewards, currentDay, qualifiedDays, runId, 
         {rewards.map((r) => {
           const qualInWindow = getQualifyingInWindow(r.scheduled_day);
           const w = getWindowForDay(r.scheduled_day);
-          const isQualifying = currentDay >= w.windowStart && currentDay <= w.windowEnd && r.status !== "claimed";
-          const isClaimable = currentDay >= r.scheduled_day && qualInWindow >= 15 && r.status !== "claimed";
+          const isQualifying =
+            currentDay >= w.windowStart && currentDay <= w.windowEnd && r.status !== "claimed";
+          const isClaimable =
+            currentDay >= r.scheduled_day && qualInWindow >= 15 && r.status !== "claimed";
 
           return (
             <div
@@ -192,7 +196,12 @@ export function RewardVaultContent({ rewards, currentDay, qualifiedDays, runId, 
 
                 {r.status === "claimed" && r.claimed_at && (
                   <p className="font-[var(--font-ui)] text-[11.5px] text-ink-3 leading-[1.5] mt-3.5">
-                    Claimed {new Date(r.claimed_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}.
+                    Claimed{" "}
+                    {new Date(r.claimed_at).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                    })}
+                    .
                   </p>
                 )}
 
@@ -212,7 +221,8 @@ export function RewardVaultContent({ rewards, currentDay, qualifiedDays, runId, 
         <div className="flex items-center gap-3.5">
           <span className="font-[var(--font-display)] text-[24px] italic text-ink-3">&ldquo;</span>
           <p className="font-[var(--font-display)] italic text-[17px] text-ink-2 leading-[1.4] flex-1">
-            Rewards were chosen on Day 0 and locked at sign. They cannot be downgraded, swapped, or re-priced before Day 90.
+            Rewards were chosen on Day 0 and locked at sign. They cannot be downgraded, swapped, or
+            re-priced before Day 90.
           </p>
           <span className="font-[var(--font-tactical)] text-[10px] text-ink-3 tracking-[0.04em] self-end">
             SIGNED · LOCKED

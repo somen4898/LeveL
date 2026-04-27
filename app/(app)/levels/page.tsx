@@ -5,7 +5,9 @@ import { padTwo } from "@/lib/utils/format";
 
 export default async function LevelsPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
@@ -35,25 +37,21 @@ export default async function LevelsPage() {
     .order("level_number");
 
   const catalogueData = (catalogue ?? []) as {
-    id: string; level_number: number; effect_kind: string; description: string;
+    id: string;
+    level_number: number;
+    effect_kind: string;
+    description: string;
   }[];
 
   // Fetch level history
-  const { data: history } = await supabase
-    .from("level_history")
-    .select("level_number, achieved_on")
-    .eq("run_id", runId);
-
-  const achievedLevels = new Set(
-    ((history ?? []) as { level_number: number }[]).map(h => h.level_number)
-  );
+  // level_history available via supabase query if needed
 
   // Stack so far: levels achieved
-  const stack = catalogueData.filter(l => l.level_number <= currentLevel);
+  const stack = catalogueData.filter((l) => l.level_number <= currentLevel);
 
   // Current level effect
-  const currentEffect = catalogueData.find(l => l.level_number === currentLevel);
-  const nextEffect = catalogueData.find(l => l.level_number === currentLevel + 1);
+  const currentEffect = catalogueData.find((l) => l.level_number === currentLevel);
+  const nextEffect = catalogueData.find((l) => l.level_number === currentLevel + 1);
 
   return (
     <>
@@ -86,7 +84,8 @@ export default async function LevelsPage() {
               {currentEffect?.description ?? "No effect"}
             </p>
             <p className="font-[var(--font-ui)] text-[12px] text-ink-4 leading-[1.5] mt-2.5">
-              Each level applies a single small change. The system&apos;s power comes from accumulation, not from any single moment.
+              Each level applies a single small change. The system&apos;s power comes from
+              accumulation, not from any single moment.
             </p>
             <hr className="border-none h-px bg-[#3a342d] my-6" />
             {nextEffect && (
@@ -187,11 +186,7 @@ export default async function LevelsPage() {
                   >
                     {l.effect_kind === "TIGHTEN" ? "TGHTN" : "UNLCK"}
                   </span>
-                  <span
-                    className={`flex-1 text-[12.5px] ${
-                      done ? "text-ink-2" : "text-ink-4"
-                    }`}
-                  >
+                  <span className={`flex-1 text-[12.5px] ${done ? "text-ink-2" : "text-ink-4"}`}>
                     {l.description}
                   </span>
                   {isCurrent && (
@@ -211,7 +206,8 @@ export default async function LevelsPage() {
         </div>
 
         <p className="font-[var(--font-ui)] text-[12px] text-ink-3 leading-[1.55] mt-4">
-          A perfectly compliant user reaches Level 30 around Day 90. A realistic user lands around Level 22–25.
+          A perfectly compliant user reaches Level 30 around Day 90. A realistic user lands around
+          Level 22–25.
         </p>
       </div>
     </>

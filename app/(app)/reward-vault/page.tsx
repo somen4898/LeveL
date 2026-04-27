@@ -5,7 +5,9 @@ import { RewardVaultContent } from "@/components/reward-vault/reward-vault-conte
 
 export default async function RewardVaultPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
@@ -26,9 +28,10 @@ export default async function RewardVaultPage() {
   const runData = run as { start_date: string; current_level: number } | null;
   if (!runData?.start_date) redirect("/onboarding");
 
-  const currentDay = Math.floor(
-    (Date.now() - new Date(runData.start_date).getTime()) / (1000 * 60 * 60 * 24)
-  ) + 1;
+  const now = new Date();
+  const currentDay =
+    Math.floor((now.getTime() - new Date(runData.start_date).getTime()) / (1000 * 60 * 60 * 24)) +
+    1;
 
   const { data: rewards } = await supabase
     .from("rewards")
@@ -37,9 +40,15 @@ export default async function RewardVaultPage() {
     .order("scheduled_day");
 
   const rewardsData = (rewards ?? []) as {
-    id: string; scheduled_day: number; tier: string; name: string;
-    price_amount: number | null; price_currency: string | null;
-    status: string; claimed_at: string | null; motivation_note: string | null;
+    id: string;
+    scheduled_day: number;
+    tier: string;
+    name: string;
+    price_amount: number | null;
+    price_currency: string | null;
+    status: string;
+    claimed_at: string | null;
+    motivation_note: string | null;
   }[];
 
   // Count qualifying days in each window
@@ -49,10 +58,9 @@ export default async function RewardVaultPage() {
     .eq("run_id", runId)
     .eq("status", "qualified");
 
-  const qualifiedDays = ((qualifiedLogs ?? []) as { day_index: number }[]).map(l => l.day_index);
+  const qualifiedDays = ((qualifiedLogs ?? []) as { day_index: number }[]).map((l) => l.day_index);
 
-  const claimedCount = rewardsData.filter(r => r.status === "claimed").length;
-  const qualifyingCount = rewardsData.filter(r => r.status === "qualifying").length;
+  // counts available via rewardsData.filter if needed in UI
 
   return (
     <>

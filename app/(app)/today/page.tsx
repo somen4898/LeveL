@@ -2,11 +2,13 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Topbar } from "@/components/shell/topbar";
 import { TodayContent } from "@/components/today/today-content";
-import { isScheduledToday, dayIndex } from "@/lib/utils/dates";
+import { dayIndex } from "@/lib/utils/dates";
 
 export default async function TodayPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
@@ -18,15 +20,14 @@ export default async function TodayPage() {
   const runId = (profile as { active_run_id: string | null } | null)?.active_run_id;
   if (!runId) redirect("/onboarding");
 
-  const { data: run } = await supabase
-    .from("runs")
-    .select("*")
-    .eq("id", runId)
-    .single();
+  const { data: run } = await supabase.from("runs").select("*").eq("id", runId).single();
 
   const runData = run as {
-    id: string; start_date: string; end_date: string;
-    current_level: number; level_streak: number;
+    id: string;
+    start_date: string;
+    end_date: string;
+    current_level: number;
+    level_streak: number;
   } | null;
   if (!runData?.start_date) redirect("/onboarding");
 
@@ -35,19 +36,18 @@ export default async function TodayPage() {
   const dayOfWeek = now.getDay();
 
   // Fetch cores with subtasks
-  const { data: cores } = await supabase
-    .from("cores")
-    .select("*")
-    .eq("run_id", runId);
+  const { data: cores } = await supabase.from("cores").select("*").eq("run_id", runId);
 
   const coresData = (cores ?? []) as {
-    id: string; kind: string; schedule_days: number[];
+    id: string;
+    kind: string;
+    schedule_days: number[];
   }[];
 
-  const scheduledCores = coresData.filter(c => c.schedule_days.includes(dayOfWeek));
+  const scheduledCores = coresData.filter((c) => c.schedule_days.includes(dayOfWeek));
 
   // Fetch subtasks for all cores
-  const coreIds = coresData.map(c => c.id);
+  const coreIds = coresData.map((c) => c.id);
   const { data: subtasks } = await supabase
     .from("subtasks")
     .select("*")
@@ -87,10 +87,7 @@ export default async function TodayPage() {
     .eq("daily_log_id", logData?.id ?? "none");
 
   // Fetch optionals
-  const { data: optionals } = await supabase
-    .from("optionals")
-    .select("*")
-    .eq("run_id", runId);
+  const { data: optionals } = await supabase.from("optionals").select("*").eq("run_id", runId);
 
   // Fetch reasoning entries for today
   const { data: reasoningEntries } = await supabase
@@ -114,29 +111,78 @@ export default async function TodayPage() {
 
   const qualifyingDays = qualifiedLogs?.length ?? 0;
 
-  const dayLabel = now.toLocaleDateString("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "short",
-  }).toUpperCase();
+  const dayLabel = now
+    .toLocaleDateString("en-US", {
+      weekday: "long",
+      day: "numeric",
+      month: "short",
+    })
+    .toUpperCase();
 
   return (
     <>
       <Topbar
         crumb={`TODAY · ${dayLabel}`}
         sub={`Day ${currentDay} / 90, Run 01`}
-        status={logData?.status === "qualified" ? "Qualified" : logData?.status === "failed" ? "Failed" : "In progress"}
-        statusKind={logData?.status === "qualified" ? "moss" : logData?.status === "failed" ? "ember" : "progress"}
+        status={
+          logData?.status === "qualified"
+            ? "Qualified"
+            : logData?.status === "failed"
+              ? "Failed"
+              : "In progress"
+        }
+        statusKind={
+          logData?.status === "qualified"
+            ? "moss"
+            : logData?.status === "failed"
+              ? "ember"
+              : "progress"
+        }
       />
       <div className="flex-1 overflow-auto p-8 pb-12">
         <TodayContent
           cores={coresData}
           scheduledCores={scheduledCores}
-          subtasks={(subtasks ?? []) as { id: string; core_id: string; label: string; measurement: string; target_numeric: number | null; unit: string | null; active_from_level: number; active_until_level: number | null }[]}
-          completions={(completions ?? []) as { id: string; subtask_id: string | null; optional_id: string | null; completed: boolean }[]}
-          optionals={(optionals ?? []) as { id: string; label: string; consecutive_skip_count: number; is_locked_in_today: boolean }[]}
-          reasoningEntries={(reasoningEntries ?? []) as { id: string; optional_id: string; reason_text: string }[]}
-          rewards={(rewards ?? []) as { id: string; scheduled_day: number; tier: string; name: string; status: string }[]}
+          subtasks={
+            (subtasks ?? []) as {
+              id: string;
+              core_id: string;
+              label: string;
+              measurement: string;
+              target_numeric: number | null;
+              unit: string | null;
+              active_from_level: number;
+              active_until_level: number | null;
+            }[]
+          }
+          completions={
+            (completions ?? []) as {
+              id: string;
+              subtask_id: string | null;
+              optional_id: string | null;
+              completed: boolean;
+            }[]
+          }
+          optionals={
+            (optionals ?? []) as {
+              id: string;
+              label: string;
+              consecutive_skip_count: number;
+              is_locked_in_today: boolean;
+            }[]
+          }
+          reasoningEntries={
+            (reasoningEntries ?? []) as { id: string; optional_id: string; reason_text: string }[]
+          }
+          rewards={
+            (rewards ?? []) as {
+              id: string;
+              scheduled_day: number;
+              tier: string;
+              name: string;
+              status: string;
+            }[]
+          }
           dailyLogId={logData?.id ?? ""}
           currentDay={currentDay}
           currentLevel={runData.current_level}
