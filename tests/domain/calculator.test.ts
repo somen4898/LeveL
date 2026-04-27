@@ -1,16 +1,18 @@
 import { describe, it, expect } from "vitest";
-import { calculateBMR, calculateTDEE, calculateTargets } from "@/lib/domain/calculator";
+import {
+  calculateBMR,
+  calculateTDEE,
+  calculateTargets,
+  calculateExercisePlan,
+  shouldUpdateExercise,
+} from "@/lib/domain/calculator";
 
 describe("calculateBMR", () => {
   it("calculates male BMR correctly", () => {
-    // 25yo male, 75kg, 175cm
-    // 10*75 + 6.25*175 - 5*25 + 5 = 750 + 1093.75 - 125 + 5 = 1723.75
     expect(calculateBMR("male", 75, 175, 25)).toBeCloseTo(1723.75);
   });
 
   it("calculates female BMR correctly", () => {
-    // 25yo female, 60kg, 165cm
-    // 10*60 + 6.25*165 - 5*25 - 161 = 600 + 1031.25 - 125 - 161 = 1345.25
     expect(calculateBMR("female", 60, 165, 25)).toBeCloseTo(1345.25);
   });
 });
@@ -25,6 +27,75 @@ describe("calculateTDEE", () => {
   });
 });
 
+describe("calculateExercisePlan", () => {
+  // Weight gain: frequency scales with calories
+  it("gain: 3x strength at low surplus", () => {
+    const plan = calculateExercisePlan("gain", 2400);
+    expect(plan.strengthDays).toBe(3);
+    expect(plan.cardioDays).toBe(0);
+  });
+
+  it("gain: 4x strength at moderate surplus", () => {
+    const plan = calculateExercisePlan("gain", 2800);
+    expect(plan.strengthDays).toBe(4);
+    expect(plan.cardioDays).toBe(0);
+  });
+
+  it("gain: 5x strength at high surplus", () => {
+    const plan = calculateExercisePlan("gain", 3500);
+    expect(plan.strengthDays).toBe(5);
+    expect(plan.cardioDays).toBe(0);
+  });
+
+  it("gain: zero cardio at all calorie levels", () => {
+    expect(calculateExercisePlan("gain", 2400).cardioDays).toBe(0);
+    expect(calculateExercisePlan("gain", 3000).cardioDays).toBe(0);
+    expect(calculateExercisePlan("gain", 3500).cardioDays).toBe(0);
+  });
+
+  // Weight loss: strength + cardio
+  it("lose: 3x strength in steep deficit", () => {
+    const plan = calculateExercisePlan("lose", 1600);
+    expect(plan.strengthDays).toBe(3);
+    expect(plan.stepsTarget).toBe(10000);
+  });
+
+  it("lose: 4x strength in mild deficit", () => {
+    const plan = calculateExercisePlan("lose", 2300);
+    expect(plan.strengthDays).toBe(4);
+    expect(plan.cardioDays).toBe(2);
+  });
+
+  // Maintenance
+  it("maintain: 3x strength baseline", () => {
+    const plan = calculateExercisePlan("maintain", 2500);
+    expect(plan.strengthDays).toBe(3);
+    expect(plan.cardioDays).toBe(1);
+  });
+
+  // Every plan has reasoning
+  it("every plan includes reasoning", () => {
+    expect(calculateExercisePlan("gain", 2800).reasoning.length).toBeGreaterThan(20);
+    expect(calculateExercisePlan("lose", 1800).reasoning.length).toBeGreaterThan(20);
+    expect(calculateExercisePlan("maintain", 2500).reasoning.length).toBeGreaterThan(20);
+  });
+});
+
+describe("shouldUpdateExercise", () => {
+  it("detects when frequency should increase", () => {
+    const currentPlan = calculateExercisePlan("gain", 2800); // 4x
+    const { shouldUpdate, newPlan } = shouldUpdateExercise(currentPlan, 3500, "gain");
+    expect(shouldUpdate).toBe(true);
+    expect(newPlan.strengthDays).toBe(5);
+  });
+
+  it("no update when calories stay in same band", () => {
+    const currentPlan = calculateExercisePlan("gain", 2800); // 4x
+    const { shouldUpdate } = shouldUpdateExercise(currentPlan, 2900, "gain");
+    expect(shouldUpdate).toBe(false);
+  });
+});
+
 describe("calculateTargets", () => {
   it("returns correct targets for weight gain", () => {
     const result = calculateTargets({
@@ -36,8 +107,9 @@ describe("calculateTargets", () => {
     });
     expect(result.calorieTarget).toBeGreaterThan(2000);
     expect(result.proteinG).toBe(Math.min(Math.round(75 * 1.8), 250));
-    expect(result.exercise.strengthDays).toBe(4);
-    expect(result.exercise.stepsTarget).toBe(7500);
+    // Exercise derived from calories, not static
+    expect(result.exercise.strengthDays).toBeGreaterThanOrEqual(3);
+    expect(result.exercise.cardioDays).toBe(0);
   });
 
   it("returns correct targets for weight loss", () => {
@@ -78,7 +150,6 @@ describe("calculateTargets", () => {
   });
 
   it("adjusts protein for obese individuals", () => {
-    // BMI > 30 should use adjusted weight
     const result = calculateTargets({
       age: 30,
       sex: "male",
@@ -86,7 +157,6 @@ describe("calculateTargets", () => {
       heightCm: 175,
       goal: "gain",
     });
-    // Protein should be less than 120 * 1.8 = 216 because adjusted weight is used
     expect(result.proteinG).toBeLessThan(216);
   });
 
@@ -130,5 +200,25 @@ describe("calculateTargets", () => {
       rate: "aggressive",
     });
     expect(aggressive.calorieTarget).toBeGreaterThan(moderate.calorieTarget);
+  });
+
+  it("exercise frequency increases with higher calorie target", () => {
+    const low = calculateTargets({
+      age: 25,
+      sex: "male",
+      weightKg: 60,
+      heightCm: 170,
+      goal: "gain",
+      rate: "moderate",
+    });
+    const high = calculateTargets({
+      age: 25,
+      sex: "male",
+      weightKg: 95,
+      heightCm: 185,
+      goal: "gain",
+      rate: "aggressive",
+    });
+    expect(high.exercise.strengthDays).toBeGreaterThanOrEqual(low.exercise.strengthDays);
   });
 });
