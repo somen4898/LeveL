@@ -97,8 +97,7 @@ export function computeWeightTrend(dataPoints: WeightDataPoint[]): WeightTrend {
  * Requires at least 2 weeks of data before suggesting any adjustment.
  */
 export function computeAdjustmentDecision(input: AdjustmentInput): AdjustmentDecision {
-  const { goal, currentCalories, currentWeight, changePercent, direction, weeksOfData, tdee, sex } =
-    input;
+  const { goal, currentCalories, changePercent, direction, weeksOfData, tdee, sex } = input;
 
   const floor = sex === "male" ? 1500 : 1200;
   const ceiling = tdee + 800;

@@ -28,7 +28,6 @@ export function CheckinFlow({
   currentDay,
   weekNumber,
   pastCheckins,
-  currentLevel,
   alreadyCheckedIn,
 }: Props) {
   const router = useRouter();
