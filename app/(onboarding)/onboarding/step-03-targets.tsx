@@ -1,8 +1,90 @@
 "use client";
 
+import { useState } from "react";
 import type { StepProps } from "./page";
+import { calculateTargets } from "@/lib/domain/calculator";
+
+type GoalType = "gain" | "lose" | "maintain";
+type ActivityType = "sedentary" | "light" | "moderate" | "very_active";
+type ExperienceType = "beginner" | "intermediate" | "advanced";
+
+const GOALS: { value: GoalType; label: string; desc: string }[] = [
+  { value: "gain", label: "Weight Gain", desc: "Build muscle, caloric surplus" },
+  { value: "lose", label: "Weight Loss", desc: "Lose fat, caloric deficit" },
+  { value: "maintain", label: "Maintain", desc: "Hold current composition" },
+];
+
+const ACTIVITY_LEVELS: { value: ActivityType; label: string; desc: string }[] = [
+  { value: "sedentary", label: "Sedentary", desc: "Desk job, little exercise" },
+  { value: "light", label: "Lightly Active", desc: "Light exercise 1-3 days/week" },
+  { value: "moderate", label: "Moderately Active", desc: "Exercise 3-5 days/week" },
+  { value: "very_active", label: "Very Active", desc: "Hard exercise 6-7 days/week" },
+];
+
+const EXPERIENCE: { value: ExperienceType; label: string }[] = [
+  { value: "beginner", label: "Beginner (< 1 year)" },
+  { value: "intermediate", label: "Intermediate (1-3 years)" },
+  { value: "advanced", label: "Advanced (3+ years)" },
+];
 
 export function StepTargets({ state, setState, onNext, onBack }: StepProps) {
+  const [computed, setComputed] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiReasoning, setAiReasoning] = useState<string | null>(null);
+  const [aiWarnings, setAiWarnings] = useState<string[]>([]);
+
+  function runCalculator() {
+    const result = calculateTargets({
+      age: state.age,
+      sex: state.sex,
+      weightKg: state.weightKg,
+      heightCm: state.heightCm,
+      goal: state.goal,
+      activityLevel: state.activityLevel,
+    });
+
+    setState({
+      ...state,
+      calorieTarget: result.calorieTarget,
+      proteinTarget: result.proteinG,
+      bodyMinutes: result.exercise.minutesPerSession,
+    });
+    setComputed(true);
+    setAiReasoning(null);
+    setAiWarnings([]);
+  }
+
+  async function runAI() {
+    setAiLoading(true);
+    try {
+      const { ai } = await import("@/lib/ai");
+      const result = await ai.calculateFromQuestionnaire({
+        age: state.age,
+        sex: state.sex,
+        weightKg: state.weightKg,
+        heightCm: state.heightCm,
+        goal: state.goal,
+        activityLevel: state.activityLevel,
+        trainingExperience: state.trainingExperience,
+        context: state.additionalContext,
+      });
+
+      setState({
+        ...state,
+        calorieTarget: result.calorieTarget,
+        proteinTarget: result.proteinG,
+        bodyMinutes: result.bodyMinutes,
+      });
+      setAiReasoning(result.reasoning);
+      setAiWarnings(result.warnings);
+      setComputed(true);
+    } catch {
+      // Fallback to pure calculator
+      runCalculator();
+    }
+    setAiLoading(false);
+  }
+
   return (
     <div>
       <span className="inline-flex items-center gap-2.5 font-[var(--font-tactical)] text-[11px] tracking-[0.2em] uppercase text-ink-3">
@@ -15,115 +97,349 @@ export function StepTargets({ state, setState, onNext, onBack }: StepProps) {
       </h1>
 
       <p className="font-[var(--font-display)] italic text-[21px] leading-[1.45] text-ink-2 mt-[22px] max-w-[640px]">
-        Every Core needs a number. The number locks on sign. It can rise through levels, but it cannot fall.
+        Answer these questions. The system calculates your targets. You can override any number
+        before signing.
       </p>
 
-      {/* Core I: Body */}
-      <div className="mt-3.5 bg-card border border-hair rounded-[12px] overflow-hidden transition-all hover:border-ink-3 hover:shadow-[0_16px_40px_-20px_rgba(20,15,10,0.18)]">
-        <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
-          <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">I</span>
-          <div className="flex flex-col flex-1 gap-1">
-            <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">Body</h3>
-            <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">PHYSICAL TRAINING · STRUCTURED LIFT</span>
-          </div>
-          <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.14em] uppercase px-3 py-1.5 bg-ink text-bone rounded-full font-medium">
-            {state.bodyDays.length}× / WEEK
-          </span>
-        </div>
-        <div className="px-7 py-[26px] bg-bone">
-          <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2.5">
-            MINIMUM SESSION LENGTH
-          </span>
-          <div className="inline-flex items-baseline gap-2 px-[18px] py-2.5 bg-card border border-hair rounded-[8px] transition-all focus-within:border-ember focus-within:shadow-[0_0_0_4px_rgba(196,98,45,0.1)]">
+      {/* Questionnaire */}
+      <div className="mt-8 bg-card border border-hair rounded-[14px] p-8">
+        <span className="font-[var(--font-tactical)] text-[11px] tracking-[0.18em] uppercase text-ink-3 block mb-6">
+          YOUR PROFILE
+        </span>
+
+        {/* Row 1: Age, Sex */}
+        <div className="grid grid-cols-2 gap-5">
+          <div>
+            <label className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+              Age
+            </label>
             <input
               type="number"
-              value={state.bodyMinutes}
-              onChange={(e) => setState({ ...state, bodyMinutes: Number(e.target.value) })}
-              className="w-[110px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[32px] font-semibold text-ink tracking-[-0.02em]"
+              value={state.age}
+              onChange={(e) => setState({ ...state, age: Number(e.target.value) })}
+              min={16}
+              max={100}
+              className="w-full px-4 py-3 font-[var(--font-tactical)] text-[24px] font-semibold bg-bone border border-hair rounded-[8px] text-ink outline-none focus:border-ember transition-colors tracking-[-0.02em]"
             />
-            <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">minutes</span>
           </div>
-          <p className="mt-4 text-[12.5px] leading-[1.55] text-ink-3 max-w-[640px]">
-            Subtask preview: &ldquo;Complete a structured workout, &ge;{state.bodyMinutes} min, with logged sets.&rdquo; Sessions under the threshold do not count toward the day.
-          </p>
-        </div>
-      </div>
-
-      {/* Core II: Fuel */}
-      <div className="mt-3.5 bg-card border border-hair rounded-[12px] overflow-hidden transition-all hover:border-ink-3 hover:shadow-[0_16px_40px_-20px_rgba(20,15,10,0.18)]">
-        <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
-          <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">II</span>
-          <div className="flex flex-col flex-1 gap-1">
-            <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">Fuel</h3>
-            <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">NUTRITION · DAILY TARGETS</span>
-          </div>
-          <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.14em] uppercase px-3 py-1.5 bg-ink text-bone rounded-full font-medium">DAILY</span>
-        </div>
-        <div className="px-7 py-[26px] bg-bone">
-          <div className="grid grid-cols-2 gap-5">
-            <div>
-              <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2.5">DAILY CALORIES</span>
-              <div className="inline-flex items-baseline gap-2 px-[18px] py-2.5 bg-card border border-hair rounded-[8px] transition-all focus-within:border-ember focus-within:shadow-[0_0_0_4px_rgba(196,98,45,0.1)]">
-                <input
-                  type="number"
-                  value={state.calorieTarget}
-                  onChange={(e) => setState({ ...state, calorieTarget: Number(e.target.value) })}
-                  className="w-[110px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[32px] font-semibold text-ink tracking-[-0.02em]"
-                />
-                <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">kcal</span>
-              </div>
-            </div>
-            <div>
-              <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2.5">DAILY PROTEIN</span>
-              <div className="inline-flex items-baseline gap-2 px-[18px] py-2.5 bg-card border border-hair rounded-[8px] transition-all focus-within:border-ember focus-within:shadow-[0_0_0_4px_rgba(196,98,45,0.1)]">
-                <input
-                  type="number"
-                  value={state.proteinTarget}
-                  onChange={(e) => setState({ ...state, proteinTarget: Number(e.target.value) })}
-                  className="w-[110px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[32px] font-semibold text-ink tracking-[-0.02em]"
-                />
-                <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">grams</span>
-              </div>
+          <div>
+            <label className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+              Sex
+            </label>
+            <div className="flex gap-3">
+              {(["male", "female"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setState({ ...state, sex: s })}
+                  className={`flex-1 py-3 rounded-[8px] font-[var(--font-tactical)] text-[12px] tracking-[0.1em] uppercase border cursor-pointer transition-all ${
+                    state.sex === s
+                      ? "bg-ink text-bone border-ink"
+                      : "bg-bone text-ink-3 border-hair hover:border-ink-3"
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
             </div>
           </div>
-          <p className="mt-4 text-[12.5px] leading-[1.55] text-ink-3 max-w-[640px]">
-            Use Mifflin-St Jeor or similar. Maintenance + surplus. LeveL does not track foods: you report a single binary at end of day. Honesty is the only auditor.
-          </p>
         </div>
-      </div>
 
-      {/* Core III: Craft */}
-      <div className="mt-3.5 bg-card border border-hair rounded-[12px] overflow-hidden transition-all hover:border-ink-3 hover:shadow-[0_16px_40px_-20px_rgba(20,15,10,0.18)]">
-        <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
-          <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">III</span>
-          <div className="flex flex-col flex-1 gap-1">
-            <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">Craft</h3>
-            <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">DELIBERATE PRACTICE · EITHER COUNTS</span>
+        {/* Row 2: Weight, Height */}
+        <div className="grid grid-cols-2 gap-5 mt-5">
+          <div>
+            <label className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+              Weight
+            </label>
+            <div className="flex items-baseline gap-2 px-4 py-3 bg-bone border border-hair rounded-[8px] focus-within:border-ember transition-colors">
+              <input
+                type="number"
+                value={state.weightKg}
+                onChange={(e) => setState({ ...state, weightKg: Number(e.target.value) })}
+                className="w-full border-none outline-none bg-transparent font-[var(--font-tactical)] text-[24px] font-semibold text-ink tracking-[-0.02em]"
+              />
+              <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase shrink-0">
+                kg
+              </span>
+            </div>
           </div>
-          <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.14em] uppercase px-3 py-1.5 bg-ink text-bone rounded-full font-medium">
-            {state.craftDays.length}× / WEEK
-          </span>
+          <div>
+            <label className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+              Height
+            </label>
+            <div className="flex items-baseline gap-2 px-4 py-3 bg-bone border border-hair rounded-[8px] focus-within:border-ember transition-colors">
+              <input
+                type="number"
+                value={state.heightCm}
+                onChange={(e) => setState({ ...state, heightCm: Number(e.target.value) })}
+                className="w-full border-none outline-none bg-transparent font-[var(--font-tactical)] text-[24px] font-semibold text-ink tracking-[-0.02em]"
+              />
+              <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase shrink-0">
+                cm
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="px-7 py-[26px] bg-bone">
-          <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">CHOOSE YOUR MODALITY</span>
-          <div className="grid grid-cols-2 gap-3 mt-2">
-            {state.craftSubtasks.map((sub, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 px-[18px] py-4 bg-ink text-bone border border-ink rounded-[8px] cursor-pointer transition-all"
+
+        {/* Row 3: Goal */}
+        <div className="mt-6">
+          <label className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+            Goal
+          </label>
+          <div className="grid grid-cols-3 gap-3">
+            {GOALS.map((g) => (
+              <button
+                key={g.value}
+                onClick={() => setState({ ...state, goal: g.value })}
+                className={`p-4 rounded-[8px] border cursor-pointer transition-all text-left ${
+                  state.goal === g.value
+                    ? "bg-ink text-bone border-ink"
+                    : "bg-bone text-ink border-hair hover:border-ink-3"
+                }`}
               >
-                <span className="w-5 h-5 rounded-[5px] bg-ember border-[1.5px] border-ember flex items-center justify-center text-white text-[11px] font-bold shrink-0">
-                  ✓
+                <span className="text-[14px] font-semibold block">{g.label}</span>
+                <span
+                  className={`text-[11px] mt-1 block ${state.goal === g.value ? "text-ink-4" : "text-ink-3"}`}
+                >
+                  {g.desc}
                 </span>
-                <span className="text-[13.5px] leading-[1.4]">{sub.label}</span>
-              </div>
+              </button>
             ))}
           </div>
-          <button className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-2 bg-transparent text-ink-3 border border-dashed border-hair rounded-[7px] text-[12px] cursor-pointer hover:text-ink hover:border-ink-3 hover:border-solid transition-all">
-            + Add custom subtask
+        </div>
+
+        {/* Row 4: Activity Level */}
+        <div className="mt-5">
+          <label className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+            Activity Level
+          </label>
+          <div className="grid grid-cols-4 gap-3">
+            {ACTIVITY_LEVELS.map((a) => (
+              <button
+                key={a.value}
+                onClick={() => setState({ ...state, activityLevel: a.value })}
+                className={`p-3 rounded-[8px] border cursor-pointer transition-all text-left ${
+                  state.activityLevel === a.value
+                    ? "bg-ink text-bone border-ink"
+                    : "bg-bone text-ink border-hair hover:border-ink-3"
+                }`}
+              >
+                <span className="text-[12px] font-semibold block">{a.label}</span>
+                <span
+                  className={`text-[10px] mt-0.5 block ${state.activityLevel === a.value ? "text-ink-4" : "text-ink-3"}`}
+                >
+                  {a.desc}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 5: Training Experience */}
+        <div className="mt-5">
+          <label className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+            Training Experience
+          </label>
+          <div className="flex gap-3">
+            {EXPERIENCE.map((e) => (
+              <button
+                key={e.value}
+                onClick={() => setState({ ...state, trainingExperience: e.value })}
+                className={`flex-1 py-3 rounded-[8px] font-[var(--font-tactical)] text-[11px] tracking-[0.06em] border cursor-pointer transition-all ${
+                  state.trainingExperience === e.value
+                    ? "bg-ink text-bone border-ink"
+                    : "bg-bone text-ink-3 border-hair hover:border-ink-3"
+                }`}
+              >
+                {e.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 6: Additional context */}
+        <div className="mt-5">
+          <label className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+            Anything else the system should know? (optional)
+          </label>
+          <input
+            type="text"
+            value={state.additionalContext}
+            onChange={(e) => setState({ ...state, additionalContext: e.target.value })}
+            placeholder="e.g. vegetarian, recovering from injury, skinny-fat, training for a marathon..."
+            className="w-full px-4 py-3 text-[13px] bg-bone border border-hair rounded-[8px] text-ink outline-none focus:border-ember transition-colors placeholder:text-ink-4"
+          />
+        </div>
+
+        {/* Calculate buttons */}
+        <div className="mt-6 flex gap-3">
+          <button
+            onClick={runCalculator}
+            className="px-5 py-3 bg-card text-ink border border-ink rounded-[8px] text-[13px] font-medium cursor-pointer hover:bg-paper transition-all"
+          >
+            Calculate targets
+          </button>
+          <button
+            onClick={runAI}
+            disabled={aiLoading}
+            className="px-5 py-3 bg-ember text-white border border-ember rounded-[8px] text-[13px] font-medium cursor-pointer shadow-[0_1px_0_#a04e1f,0_4px_12px_rgba(196,98,45,0.25)] hover:bg-ember-d transition-all disabled:opacity-50"
+          >
+            {aiLoading ? "Calculating..." : "Calculate with AI context"}
           </button>
         </div>
       </div>
+
+      {/* Computed results */}
+      {computed && (
+        <div className="mt-6">
+          {aiReasoning && (
+            <div className="mb-4 p-5 bg-bone border border-hair rounded-[10px] border-l-[3px] border-l-ember">
+              <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+                AI REASONING
+              </span>
+              <p className="font-[var(--font-display)] italic text-[16px] leading-[1.5] text-ink-2">
+                {aiReasoning}
+              </p>
+              {aiWarnings.length > 0 && (
+                <div className="mt-3 flex flex-col gap-1">
+                  {aiWarnings.map((w, i) => (
+                    <span key={i} className="text-[12px] text-rust">
+                      {w}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <span className="font-[var(--font-tactical)] text-[11px] tracking-[0.18em] uppercase text-ink-3 block mb-3">
+            YOUR TARGETS · EDITABLE BEFORE SIGN
+          </span>
+
+          {/* Core I: Body */}
+          <div className="bg-card border border-hair rounded-[12px] overflow-hidden">
+            <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
+              <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">
+                I
+              </span>
+              <div className="flex flex-col flex-1 gap-1">
+                <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">Body</h3>
+                <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">
+                  PHYSICAL TRAINING
+                </span>
+              </div>
+            </div>
+            <div className="px-7 py-5 bg-bone">
+              <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+                MIN SESSION LENGTH
+              </span>
+              <div className="inline-flex items-baseline gap-2 px-4 py-2.5 bg-card border border-hair rounded-[8px] focus-within:border-ember">
+                <input
+                  type="number"
+                  value={state.bodyMinutes}
+                  onChange={(e) => setState({ ...state, bodyMinutes: Number(e.target.value) })}
+                  className="w-[80px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[28px] font-semibold text-ink tracking-[-0.02em]"
+                />
+                <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">
+                  min
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Core II: Fuel */}
+          <div className="mt-3 bg-card border border-hair rounded-[12px] overflow-hidden">
+            <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
+              <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">
+                II
+              </span>
+              <div className="flex flex-col flex-1 gap-1">
+                <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">Fuel</h3>
+                <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">
+                  NUTRITION · DAILY
+                </span>
+              </div>
+            </div>
+            <div className="px-7 py-5 bg-bone">
+              <div className="grid grid-cols-2 gap-5">
+                <div>
+                  <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+                    DAILY CALORIES
+                  </span>
+                  <div className="inline-flex items-baseline gap-2 px-4 py-2.5 bg-card border border-hair rounded-[8px] focus-within:border-ember">
+                    <input
+                      type="number"
+                      value={state.calorieTarget}
+                      onChange={(e) =>
+                        setState({ ...state, calorieTarget: Number(e.target.value) })
+                      }
+                      className="w-[100px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[28px] font-semibold text-ink tracking-[-0.02em]"
+                    />
+                    <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">
+                      kcal
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+                    DAILY PROTEIN
+                  </span>
+                  <div className="inline-flex items-baseline gap-2 px-4 py-2.5 bg-card border border-hair rounded-[8px] focus-within:border-ember">
+                    <input
+                      type="number"
+                      value={state.proteinTarget}
+                      onChange={(e) =>
+                        setState({ ...state, proteinTarget: Number(e.target.value) })
+                      }
+                      className="w-[80px] border-none outline-none bg-transparent font-[var(--font-tactical)] text-[28px] font-semibold text-ink tracking-[-0.02em]"
+                    />
+                    <span className="font-[var(--font-tactical)] text-[12px] text-ink-3 tracking-[0.14em] uppercase">
+                      grams
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Core III: Craft */}
+          <div className="mt-3 bg-card border border-hair rounded-[12px] overflow-hidden">
+            <div className="flex items-center gap-[18px] px-7 py-[22px] border-b border-hair-2">
+              <span className="font-[var(--font-display)] italic text-[48px] text-ember leading-none w-12">
+                III
+              </span>
+              <div className="flex flex-col flex-1 gap-1">
+                <h3 className="font-[var(--font-display)] italic text-[32px] leading-none">
+                  Craft
+                </h3>
+                <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3">
+                  DELIBERATE PRACTICE · CHANGEABLE MID-RUN
+                </span>
+              </div>
+            </div>
+            <div className="px-7 py-5 bg-bone">
+              <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
+                CHOOSE YOUR MODALITY
+              </span>
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                {state.craftSubtasks.map((sub, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 px-4 py-3.5 bg-ink text-bone border border-ink rounded-[8px]"
+                  >
+                    <span className="w-5 h-5 rounded-[5px] bg-ember border-[1.5px] border-ember flex items-center justify-center text-white text-[11px] font-bold shrink-0">
+                      ✓
+                    </span>
+                    <span className="text-[13px] leading-[1.4]">{sub.label}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 text-[12px] text-ink-3 leading-[1.5]">
+                Craft subtasks can be changed mid-run with a reason. The other Cores lock on sign.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Nav */}
       <div className="mt-9 flex items-center justify-between">
@@ -134,11 +450,12 @@ export function StepTargets({ state, setState, onNext, onBack }: StepProps) {
           ← Step 02 · The Why
         </button>
         <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.14em] uppercase text-ink-3">
-          NEXT: STEP 04 · SCHEDULE
+          {computed ? "NEXT: STEP 04 · SCHEDULE" : "CALCULATE TARGETS FIRST"}
         </span>
         <button
           onClick={onNext}
-          className="inline-flex items-center gap-2.5 px-[22px] py-[13px] bg-ember text-white border border-ember rounded-[8px] text-[14px] font-medium cursor-pointer shadow-[0_1px_0_#a04e1f,0_4px_16px_rgba(196,98,45,0.3)] hover:bg-ember-d hover:-translate-y-px transition-all"
+          disabled={!computed || state.calorieTarget === 0}
+          className="inline-flex items-center gap-2.5 px-[22px] py-[13px] bg-ember text-white border border-ember rounded-[8px] text-[14px] font-medium cursor-pointer shadow-[0_1px_0_#a04e1f,0_4px_16px_rgba(196,98,45,0.3)] hover:bg-ember-d hover:-translate-y-px transition-all disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Lock targets & continue <span>→</span>
         </button>

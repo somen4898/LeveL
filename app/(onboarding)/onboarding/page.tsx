@@ -12,7 +12,16 @@ export interface OnboardingState {
   displayName: string;
   // The Why
   anchorText: string;
-  // Targets
+  // Biometrics (questionnaire)
+  age: number;
+  sex: "male" | "female";
+  weightKg: number;
+  heightCm: number;
+  goal: "gain" | "lose" | "maintain";
+  activityLevel: "sedentary" | "light" | "moderate" | "very_active";
+  trainingExperience: "beginner" | "intermediate" | "advanced";
+  additionalContext: string;
+  // Computed targets (filled by calculator + AI)
   calorieTarget: number;
   proteinTarget: number;
   bodyMinutes: number;
@@ -34,8 +43,16 @@ export interface OnboardingState {
 const INITIAL_STATE: OnboardingState = {
   displayName: "",
   anchorText: "",
-  calorieTarget: 2950,
-  proteinTarget: 145,
+  age: 25,
+  sex: "male",
+  weightKg: 75,
+  heightCm: 175,
+  goal: "gain",
+  activityLevel: "light",
+  trainingExperience: "beginner",
+  additionalContext: "",
+  calorieTarget: 0,
+  proteinTarget: 0,
   bodyMinutes: 45,
   craftSubtasks: [
     { label: "One LeetCode problem (any difficulty)", measurement: "binary" },
@@ -76,7 +93,9 @@ export default function OnboardingPage() {
   useEffect(() => {
     async function fetchDisplayName() {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
@@ -120,7 +139,10 @@ export default function OnboardingPage() {
               />
             ))}
             <span className="ml-3 font-[var(--font-tactical)] text-[10px] tracking-[0.14em] uppercase text-ink-3">
-              <strong className="text-ink font-semibold">STEP {String(step + 1).padStart(2, "0")}</strong> · OF 05 · {STEP_LABELS[step].toUpperCase()}
+              <strong className="text-ink font-semibold">
+                STEP {String(step + 1).padStart(2, "0")}
+              </strong>{" "}
+              · OF 05 · {STEP_LABELS[step].toUpperCase()}
             </span>
           </div>
         </div>
@@ -136,8 +158,14 @@ export default function OnboardingPage() {
           <CurrentStep
             state={state}
             setState={setState}
-            onNext={() => { setStep((s) => Math.min(s + 1, 4)); window.scrollTo(0, 0); }}
-            onBack={() => { setStep((s) => Math.max(s - 1, 0)); window.scrollTo(0, 0); }}
+            onNext={() => {
+              setStep((s) => Math.min(s + 1, 4));
+              window.scrollTo(0, 0);
+            }}
+            onBack={() => {
+              setStep((s) => Math.max(s - 1, 0));
+              window.scrollTo(0, 0);
+            }}
             step={step}
           />
         </div>

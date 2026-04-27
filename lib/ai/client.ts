@@ -11,12 +11,14 @@ export function getClient(): Anthropic {
   return client;
 }
 
-// ── Config: change model/defaults in one place ──
+// ── Config: change models/defaults in one place ──
 
 export const AI_CONFIG = {
-  model: "claude-haiku-4-5-20251001" as string,
+  models: {
+    fast: "claude-haiku-4-5-20251001", // formatting, structuring
+    reasoning: "claude-sonnet-4-6-20250514", // analysis, suggestions, nutrition
+  },
   defaults: {
     maxTokens: 512,
-    temperature: 0,
   },
 } as const;

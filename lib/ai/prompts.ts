@@ -59,6 +59,42 @@ Rules:
 - Don't duplicate existing optionals
 - Keep it specific and measurable
 - Label uses · separator (e.g. "Cold shower · 60 sec")`,
+
+  calculateFromQuestionnaire: (data: {
+    age: number;
+    sex: string;
+    weightKg: number;
+    heightCm: number;
+    goal: string;
+    activityLevel: string;
+    trainingExperience: string;
+    context: string;
+  }) => `Based on this user's profile, calculate their optimal daily targets for a 90-day fitness contract.
+
+Profile:
+- Age: ${data.age}
+- Sex: ${data.sex}
+- Weight: ${data.weightKg} kg
+- Height: ${data.heightCm} cm
+- Goal: ${data.goal}
+- Activity level: ${data.activityLevel}
+- Training experience: ${data.trainingExperience}
+${data.context ? `- Additional context: "${data.context}"` : ""}
+
+Calculate using Mifflin-St Jeor for BMR, apply the activity multiplier, then adjust for their goal.
+
+Return ONLY valid JSON:
+{
+  "calorieTarget": number (rounded to nearest 25),
+  "proteinG": number (rounded to nearest 5),
+  "bodyMinutes": number (session length in minutes),
+  "bodyDaysPerWeek": number,
+  "waterLiters": number (1 decimal),
+  "stepsTarget": number,
+  "reasoning": "3-4 sentences explaining each number. Cite the formula. Be specific about why these numbers for THIS person.",
+  "warnings": ["any safety notes or caveats, empty array if none"]
+}`,
+
   refineTargets: (
     calculated: { calories: number; protein: number; exercise: string },
     context: string
