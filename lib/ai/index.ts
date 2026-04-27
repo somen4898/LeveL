@@ -7,8 +7,14 @@ import {
   FormattedActivitySchema,
   TightenSuggestionSchema,
   UnlockSuggestionSchema,
+  RefinedTargetsSchema,
 } from "./schemas";
-import type { FormattedActivity, TightenSuggestion, UnlockSuggestion } from "./schemas";
+import type {
+  FormattedActivity,
+  TightenSuggestion,
+  UnlockSuggestion,
+  RefinedTargets,
+} from "./schemas";
 
 // ── Public API: import { ai } from "@/lib/ai" ──
 
@@ -32,13 +38,20 @@ export const ai = {
     });
   },
 
-  async suggestUnlock(
-    input: string,
-    existingOptionals: string[]
-  ): Promise<UnlockSuggestion> {
+  async suggestUnlock(input: string, existingOptionals: string[]): Promise<UnlockSuggestion> {
     return callAI({
       prompt: PROMPTS.suggestUnlock(input, existingOptionals),
       schema: UnlockSuggestionSchema,
+    });
+  },
+
+  async refineTargets(
+    calculated: { calories: number; protein: number; exercise: string },
+    context: string
+  ): Promise<RefinedTargets> {
+    return callAI({
+      prompt: PROMPTS.refineTargets(calculated, context),
+      schema: RefinedTargetsSchema,
     });
   },
 };
