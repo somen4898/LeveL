@@ -1,12 +1,6 @@
 // Placeholder — regenerate with: npx supabase gen types typescript --project-id <id> > lib/supabase/types.ts
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 type ProfilesInsert = {
   id: string;
@@ -132,6 +126,25 @@ type ReasoningEntriesInsert = {
   reason_text: string;
   tag?: "sick" | "tired" | "busy" | "other" | null;
   is_immutable?: boolean;
+};
+
+type WeightCheckinsInsert = {
+  id?: string;
+  run_id: string;
+  user_id: string;
+  checkin_date: string;
+  day_index: number;
+  weight_kg: number;
+  notes?: string | null;
+};
+
+type ProgressPhotosInsert = {
+  id?: string;
+  run_id: string;
+  user_id: string;
+  photo_date: string;
+  day_index: number;
+  storage_path: string;
 };
 
 export type Database = {
@@ -316,6 +329,35 @@ export type Database = {
         };
         Insert: ReasoningEntriesInsert;
         Update: Partial<ReasoningEntriesInsert>;
+        Relationships: [];
+      };
+      weight_checkins: {
+        Row: {
+          id: string;
+          run_id: string;
+          user_id: string;
+          checkin_date: string;
+          day_index: number;
+          weight_kg: number;
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: WeightCheckinsInsert;
+        Update: Partial<WeightCheckinsInsert>;
+        Relationships: [];
+      };
+      progress_photos: {
+        Row: {
+          id: string;
+          run_id: string;
+          user_id: string;
+          photo_date: string;
+          day_index: number;
+          storage_path: string;
+          created_at: string;
+        };
+        Insert: ProgressPhotosInsert;
+        Update: Partial<ProgressPhotosInsert>;
         Relationships: [];
       };
     };
