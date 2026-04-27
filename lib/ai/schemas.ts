@@ -43,9 +43,26 @@ export const QuestionnaireTargetsSchema = z.object({
   warnings: z.array(z.string()),
 });
 
+export const CheckinAnalysisSchema = z.object({
+  suggestedCalories: z.number(),
+  suggestedProtein: z.number(),
+  reasoning: z.string(),
+  encouragement: z.string(),
+});
+
+export const OptionalFromInputSchema = z.object({
+  label: z.string(),
+  measurement: z.enum(["binary", "numeric"]),
+  target: z.number().nullable(),
+  unit: z.string().nullable(),
+  reasoning: z.string(),
+});
+
 // Derived types
 export type FormattedActivity = z.infer<typeof FormattedActivitySchema>;
 export type TightenSuggestion = z.infer<typeof TightenSuggestionSchema>;
 export type UnlockSuggestion = z.infer<typeof UnlockSuggestionSchema>;
 export type RefinedTargets = z.infer<typeof RefinedTargetsSchema>;
 export type QuestionnaireTargets = z.infer<typeof QuestionnaireTargetsSchema>;
+export type CheckinAnalysis = z.infer<typeof CheckinAnalysisSchema>;
+export type OptionalFromInput = z.infer<typeof OptionalFromInputSchema>;

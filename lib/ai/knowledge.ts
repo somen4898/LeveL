@@ -171,6 +171,72 @@ export const GUIDELINES = {
     } satisfies CitedValue,
   },
 
+  optionalActivities: {
+    sleep: {
+      range: [7, 9],
+      default: 7.5,
+      unit: "hr",
+      source: "AASM guidelines; Walker",
+      note: "<7hr impairs MPS ~30%, critical for gain goal",
+    } satisfies CitedValue,
+    reading: {
+      range: [10, 30],
+      default: 15,
+      unit: "min",
+      source: "Lally et al., 2010",
+      note: "Lower threshold = higher compliance for new habits",
+    } satisfies CitedValue,
+    meditation: {
+      range: [5, 20],
+      default: 10,
+      unit: "min",
+      source: "Goyal et al., JAMA, 2014",
+      note: "10 min sufficient for cortisol reduction",
+    } satisfies CitedValue,
+    cold_shower: {
+      range: [30, 120],
+      default: 60,
+      unit: "sec",
+      source: "Soberg et al., Cell, 2022",
+      note: "Benefits plateau at 11 min/week total",
+    } satisfies CitedValue,
+    walking: {
+      range: [6000, 12000],
+      default: 8000,
+      unit: "steps",
+      source: "Lee et al., JAMA, 2019",
+      note: "Gain: 7k, Lose: 10k",
+    } satisfies CitedValue,
+    stretching: {
+      range: [5, 15],
+      default: 10,
+      unit: "min",
+      source: "ACSM guidelines",
+      note: "Post-workout preferred",
+    } satisfies CitedValue,
+    journaling: {
+      range: [100, 300],
+      default: 200,
+      unit: "words",
+      source: "Pennebaker, 1997",
+      note: "Binary option also valid",
+    } satisfies CitedValue,
+    gratitude: {
+      range: [1, 3],
+      default: 1,
+      unit: "lines",
+      source: "Emmons & McCullough, 2003",
+      note: "Binary works better than word count",
+    } satisfies CitedValue,
+    no_phone_am: {
+      range: [30, 60],
+      default: 30,
+      unit: "min",
+      source: "Dopamine baseline research",
+      note: "Binary measurement recommended",
+    } satisfies CitedValue,
+  },
+
   foods: {
     gain: {
       title: "Foods that support weight gain",
@@ -338,6 +404,17 @@ EXERCISE:
 - Steps: gain=${g.exercise.steps.gain.target}, lose=${g.exercise.steps.lose.target}, maintain=${g.exercise.steps.maintain.target}.
 
 HYDRATION: ${formatGuideline(g.hydration.perKg)}
+
+OPTIONAL ACTIVITIES (context for suggestions, not required):
+- Sleep: ${formatGuideline(g.optionalActivities.sleep)}
+- Reading: ${formatGuideline(g.optionalActivities.reading)}
+- Meditation: ${formatGuideline(g.optionalActivities.meditation)}
+- Cold shower: ${formatGuideline(g.optionalActivities.cold_shower)}
+- Walking: ${formatGuideline(g.optionalActivities.walking)}
+- Stretching: ${formatGuideline(g.optionalActivities.stretching)}
+- Journaling: ${formatGuideline(g.optionalActivities.journaling)}
+- Gratitude: ${formatGuideline(g.optionalActivities.gratitude)}
+- No phone AM: ${formatGuideline(g.optionalActivities.no_phone_am)}
 
 RULES:
 - Round calories to nearest 25, protein to nearest 5g.

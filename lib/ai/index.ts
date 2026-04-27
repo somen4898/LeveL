@@ -10,6 +10,8 @@ import {
   UnlockSuggestionSchema,
   RefinedTargetsSchema,
   QuestionnaireTargetsSchema,
+  CheckinAnalysisSchema,
+  OptionalFromInputSchema,
 } from "./schemas";
 import type {
   FormattedActivity,
@@ -17,6 +19,8 @@ import type {
   UnlockSuggestion,
   RefinedTargets,
   QuestionnaireTargets,
+  CheckinAnalysis,
+  OptionalFromInput,
 } from "./schemas";
 
 // ── Public API: import { ai } from "@/lib/ai" ──
@@ -83,6 +87,45 @@ export const ai = {
       model: "reasoning",
       system: KNOWLEDGE.nutrition,
       maxTokens: 1024,
+    });
+  },
+
+  async checkinAnalysis(data: {
+    goal: string;
+    currentCalories: number;
+    currentProtein: number;
+    weightTrend: {
+      changeKg: number;
+      changePercent: number;
+      direction: string;
+      weeksOfData: number;
+    };
+    weekNumber: number;
+    domainDecision: {
+      shouldAdjust: boolean;
+      suggestedCalories: number;
+      reasoning: string;
+      rule: string;
+    };
+  }): Promise<CheckinAnalysis> {
+    return callAI({
+      prompt: PROMPTS.weeklyCheckinAnalysis(data),
+      schema: CheckinAnalysisSchema,
+      model: "reasoning",
+      system: KNOWLEDGE.nutrition,
+    });
+  },
+
+  async suggestOptionalFromInput(
+    input: string,
+    goal: string,
+    existingOptionals: string[]
+  ): Promise<OptionalFromInput> {
+    return callAI({
+      prompt: PROMPTS.suggestOptionalFromInput(input, goal, existingOptionals),
+      schema: OptionalFromInputSchema,
+      model: "reasoning",
+      system: KNOWLEDGE.nutrition,
     });
   },
 };
