@@ -80,14 +80,12 @@ export function StepSign({ state, setState, onBack }: StepProps) {
         if (!core) continue;
 
         if (cfg.kind === "body") {
-          await supabase
-            .from("subtasks")
-            .insert({
-              core_id: core.id,
-              user_id: user.id,
-              label: `Complete a structured workout, ≥${state.bodyMinutes} min`,
-              measurement: "binary",
-            });
+          await supabase.from("subtasks").insert({
+            core_id: core.id,
+            user_id: user.id,
+            label: `Complete a structured workout, ≥${state.bodyMinutes} min`,
+            measurement: "binary",
+          });
         } else if (cfg.kind === "fuel") {
           await supabase.from("subtasks").insert([
             {
@@ -110,17 +108,15 @@ export function StepSign({ state, setState, onBack }: StepProps) {
             },
           ]);
         } else if (cfg.kind === "craft") {
-          await supabase
-            .from("subtasks")
-            .insert(
-              state.craftSubtasks.map((s, i) => ({
-                core_id: core.id,
-                user_id: user.id,
-                label: s.label,
-                measurement: "binary" as const,
-                position: i,
-              }))
-            );
+          await supabase.from("subtasks").insert(
+            state.craftSubtasks.map((s, i) => ({
+              core_id: core.id,
+              user_id: user.id,
+              label: s.label,
+              measurement: "binary" as const,
+              position: i,
+            }))
+          );
         }
       }
 
@@ -186,7 +182,7 @@ export function StepSign({ state, setState, onBack }: StepProps) {
         {/* Section I: Identity & Anchor */}
         <div className="p-[28px_36px] border-b border-hair-2">
           <div className="flex items-baseline gap-3.5 mb-[18px]">
-            <span className="font-[var(--font-display)] italic text-[22px] text-ember">I</span>
+            <span className="font-[var(--font-display)] italic text-[22px] text-ember">01</span>
             <h4 className="font-[var(--font-display)] italic text-[26px]">Identity & anchor</h4>
             <span className="ml-auto font-[var(--font-tactical)] text-[9.5px] tracking-[0.16em] uppercase text-ember">
               LOCKED
@@ -213,7 +209,7 @@ export function StepSign({ state, setState, onBack }: StepProps) {
         {/* Section II: Three Cores */}
         <div className="p-[28px_36px] border-b border-hair-2">
           <div className="flex items-baseline gap-3.5 mb-[18px]">
-            <span className="font-[var(--font-display)] italic text-[22px] text-ember">II</span>
+            <span className="font-[var(--font-display)] italic text-[22px] text-ember">02</span>
             <h4 className="font-[var(--font-display)] italic text-[26px]">The three Cores</h4>
             <span className="ml-auto font-[var(--font-tactical)] text-[9.5px] tracking-[0.16em] uppercase text-ember">
               LOCKED FOR 90 DAYS
@@ -280,7 +276,7 @@ export function StepSign({ state, setState, onBack }: StepProps) {
         {/* Section III: Weekly rhythm */}
         <div className="p-[28px_36px] border-b border-hair-2">
           <div className="flex items-baseline gap-3.5 mb-[18px]">
-            <span className="font-[var(--font-display)] italic text-[22px] text-ember">III</span>
+            <span className="font-[var(--font-display)] italic text-[22px] text-ember">03</span>
             <h4 className="font-[var(--font-display)] italic text-[26px]">Weekly rhythm</h4>
             <span className="ml-auto font-[var(--font-tactical)] text-[9.5px] tracking-[0.16em] uppercase text-ember">
               LOCKED
@@ -321,7 +317,7 @@ export function StepSign({ state, setState, onBack }: StepProps) {
         {/* Section IV: Rewards */}
         <div className="p-[28px_36px] border-b border-hair-2">
           <div className="flex items-baseline gap-3.5 mb-[18px]">
-            <span className="font-[var(--font-display)] italic text-[22px] text-ember">IV</span>
+            <span className="font-[var(--font-display)] italic text-[22px] text-ember">04</span>
             <h4 className="font-[var(--font-display)] italic text-[26px]">Six rewards</h4>
             <span className="ml-auto font-[var(--font-tactical)] text-[9.5px] tracking-[0.16em] uppercase text-ember">
               LOCKED AT SIGN

@@ -7,7 +7,7 @@ export const PROMPTS = {
 
 Input: "${input}"
 
-Return ONLY valid JSON:
+Respond with ONLY a single JSON object, no other text:
 {
   "label": "Short activity name with target",
   "measurement": "numeric" or "binary",
@@ -30,7 +30,7 @@ Rules:
 
 Suggest exactly 3 ways to tighten this target. Small, incremental increases.
 
-Return ONLY a JSON array:
+Respond with ONLY a single JSON array, no other text:
 [{ "label": "Name", "adjustment": "+50 kcal", "newValue": "3,000 kcal", "reasoning": "One sentence." }]
 
 Rules:
@@ -46,7 +46,7 @@ Rules:
 They wrote: "${input}"
 Existing optionals: ${existingOptionals.length > 0 ? existingOptionals.join(", ") : "none yet"}
 
-Return ONLY valid JSON:
+Respond with ONLY a single JSON object, no other text:
 {
   "label": "Short name · target",
   "measurement": "numeric" or "binary",
@@ -69,31 +69,41 @@ Rules:
     activityLevel: string;
     trainingExperience: string;
     context: string;
-  }) => `Based on this user's profile, calculate their optimal daily targets for a 90-day fitness contract.
+  }) => `You are calculating personalized daily targets for a 90-day fitness contract.
 
-Profile:
-- Age: ${data.age}
-- Sex: ${data.sex}
-- Weight: ${data.weightKg} kg
-- Height: ${data.heightCm} cm
-- Goal: ${data.goal}
-- Activity level: ${data.activityLevel}
-- Training experience: ${data.trainingExperience}
-${data.context ? `- Additional context: "${data.context}"` : ""}
+<profile>
+Age: ${data.age}
+Sex: ${data.sex}
+Weight: ${data.weightKg} kg
+Height: ${data.heightCm} cm
+Goal: ${data.goal}
+Activity level: ${data.activityLevel}
+Training experience: ${data.trainingExperience}
+${data.context ? `Additional context: "${data.context}"` : "No additional context provided."}
+</profile>
 
-Calculate using Mifflin-St Jeor for BMR, apply the activity multiplier, then adjust for their goal.
+<instructions>
+1. Calculate BMR using Mifflin-St Jeor equation
+2. Apply the activity multiplier to get TDEE
+3. Adjust calories based on goal (surplus for gain, deficit for lose, maintain for maintain)
+4. Calculate protein using the evidence-based multiplier for the goal
+5. Determine exercise plan based on goal, calorie level, and training experience
+6. If additional context conflicts with the goal field, flag it in warnings but honor the goal field
+</instructions>
 
-Return ONLY valid JSON:
+<output_format>
+Respond with ONLY a single JSON object. No markdown, no explanation outside the JSON:
 {
-  "calorieTarget": number (rounded to nearest 25),
-  "proteinG": number (rounded to nearest 5),
-  "bodyMinutes": number (session length in minutes),
-  "bodyDaysPerWeek": number,
-  "waterLiters": number (1 decimal),
-  "stepsTarget": number,
-  "reasoning": "3-4 sentences explaining each number. Cite the formula. Be specific about why these numbers for THIS person.",
-  "warnings": ["any safety notes or caveats, empty array if none"]
-}`,
+  "calorieTarget": <number, rounded to nearest 25>,
+  "proteinG": <number, rounded to nearest 5>,
+  "bodyMinutes": <number, session length in minutes>,
+  "bodyDaysPerWeek": <number>,
+  "waterLiters": <number, 1 decimal place>,
+  "stepsTarget": <number>,
+  "reasoning": "<3-4 sentences. Show your BMR calculation. Cite the formula and sources. Explain why these specific numbers for THIS person's profile.>",
+  "warnings": ["<any safety notes, contradictions, or caveats. Empty array if none.>"]
+}
+</output_format>`,
 
   refineTargets: (
     calculated: { calories: number; protein: number; exercise: string },
@@ -107,13 +117,13 @@ The user added this context: "${context}"
 
 Based on their context, suggest adjusted targets if the baseline doesn't fit. If the baseline is fine, confirm it.
 
-Return ONLY valid JSON:
+Respond with ONLY a single JSON object, no other text:
 {
-  "calorieTarget": number,
-  "proteinG": number,
-  "bodyMinutes": number,
-  "bodyDaysPerWeek": number,
-  "reasoning": "2-3 sentences explaining the recommendation in contract voice. Brief, factual."
+  "calorieTarget": <number>,
+  "proteinG": <number>,
+  "bodyMinutes": <number>,
+  "bodyDaysPerWeek": <number>,
+  "reasoning": "<2-3 sentences explaining the recommendation. Contract voice: brief, factual.>"
 }
 
 Rules:
@@ -138,46 +148,51 @@ Rules:
       reasoning: string;
       rule: string;
     };
-  }) => `Weekly check-in analysis for a ${data.goal} goal.
+  }) => `Analyze this weekly check-in for a user on a ${data.goal} protocol.
 
-Current targets: ${data.currentCalories} kcal, ${data.currentProtein}g protein
-Weight trend: ${data.weightTrend.changeKg > 0 ? "+" : ""}${data.weightTrend.changeKg.toFixed(1)} kg this week (${data.weightTrend.changePercent.toFixed(1)}% BW, direction: ${data.weightTrend.direction})
+<current_state>
+Targets: ${data.currentCalories} kcal, ${data.currentProtein}g protein
+Weight change: ${data.weightTrend.changeKg > 0 ? "+" : ""}${data.weightTrend.changeKg.toFixed(1)} kg (${data.weightTrend.changePercent.toFixed(1)}% BW, direction: ${data.weightTrend.direction})
 Week: ${data.weekNumber}, data points: ${data.weightTrend.weeksOfData}
+</current_state>
 
-The domain logic suggests: ${data.domainDecision.reasoning}
+<domain_decision>
+The system's rule-based logic suggests: ${data.domainDecision.reasoning}
 Suggested calories: ${data.domainDecision.suggestedCalories} kcal (rule: ${data.domainDecision.rule})
+</domain_decision>
 
-Add context and phrasing to this suggestion. Explain WHY in 2-3 sentences using the evidence base. Cite sources.
+<instructions>
+Add evidence-based context to the domain suggestion. Explain WHY this adjustment makes sense given the user's trend. Cite sources from the evidence base.
+</instructions>
 
-Return ONLY valid JSON:
+Respond with ONLY a single JSON object, no other text:
 {
-  "suggestedCalories": number,
-  "suggestedProtein": number,
-  "reasoning": "2-3 sentences with citations",
-  "encouragement": "One sentence in contract voice. Brief. Not a coach."
-}
-
-Rules:
-- Do NOT override the domain logic suggestion by more than 50 kcal
-- Voice: contract-like. State facts. No cheerleading.`,
+  "suggestedCalories": <number, must be within 50 kcal of domain suggestion>,
+  "suggestedProtein": <number>,
+  "reasoning": "<2-3 sentences with citations explaining the adjustment>",
+  "encouragement": "<One sentence. Contract voice: factual, brief. No cheerleading.>"
+}`,
 
   suggestOptionalFromInput: (
     input: string,
     goal: string,
     existingOptionals: string[]
   ) => `A user wants to add "${input}" as an Optional habit to their 90-day tracker.
-Their goal is: ${goal}
+
+<context>
+Goal: ${goal}
 Existing optionals: ${existingOptionals.length > 0 ? existingOptionals.join(", ") : "none yet"}
+</context>
 
-Research what the optimal target should be for this activity given their goal. Use the evidence base provided in the system prompt.
+Research the optimal target for this activity given their goal. Use the evidence base provided in the system prompt.
 
-Return ONLY valid JSON:
+Respond with ONLY a single JSON object, no other text:
 {
-  "label": "Activity name with target",
+  "label": "<Activity name with target>",
   "measurement": "numeric" or "binary",
-  "target": number or null,
+  "target": <number or null>,
   "unit": "hr" or "min" or "sec" or "steps" or "words" or null,
-  "reasoning": "2-3 sentences explaining why this target for this person's goal. Cite source."
+  "reasoning": "<2-3 sentences explaining why this target for this person's goal. Cite source.>"
 }
 
 Rules:

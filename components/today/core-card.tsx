@@ -1,5 +1,13 @@
 "use client";
 
+interface ExercisePlan {
+  strengthDays: number;
+  cardioDays: number;
+  minutesPerSession: number;
+  stepsTarget: number;
+  reasoning: string;
+}
+
 interface Props {
   numeral: string;
   name: string;
@@ -8,15 +16,23 @@ interface Props {
   subtasks: { id: string; label: string }[];
   completions: { subtask_id: string | null; completed: boolean }[];
   onToggle: (subtaskId: string, completed: boolean) => void;
+  exercisePlan?: ExercisePlan;
 }
 
-export function CoreCard({ numeral, name, target, done, subtasks, completions, onToggle }: Props) {
+export function CoreCard({
+  numeral,
+  name,
+  target,
+  done,
+  subtasks,
+  completions,
+  onToggle,
+  exercisePlan,
+}: Props) {
   return (
     <div
       className={`rounded-[10px] p-[18px_20px] relative ${
-        done
-          ? "bg-ink text-bone"
-          : "bg-bone border border-hair-2"
+        done ? "bg-ink text-bone" : "bg-bone border border-hair-2"
       }`}
     >
       <div className="flex items-center gap-2.5">
@@ -45,9 +61,7 @@ export function CoreCard({ numeral, name, target, done, subtasks, completions, o
           <button
             onClick={() => {
               subtasks.forEach((sub) => {
-                const isComplete = completions.some(
-                  (c) => c.subtask_id === sub.id && c.completed
-                );
+                const isComplete = completions.some((c) => c.subtask_id === sub.id && c.completed);
                 if (!isComplete) onToggle(sub.id, true);
               });
             }}
@@ -58,16 +72,10 @@ export function CoreCard({ numeral, name, target, done, subtasks, completions, o
         )}
       </div>
 
-      <hr
-        className={`border-none h-px my-3 ${
-          done ? "bg-[#3a342d]" : "bg-hair-2"
-        }`}
-      />
+      <hr className={`border-none h-px my-3 ${done ? "bg-[#3a342d]" : "bg-hair-2"}`} />
 
       {subtasks.map((sub) => {
-        const isComplete = completions.some(
-          (c) => c.subtask_id === sub.id && c.completed
-        );
+        const isComplete = completions.some((c) => c.subtask_id === sub.id && c.completed);
         return (
           <div key={sub.id} className="flex items-center gap-2.5 py-1">
             <button
@@ -90,6 +98,25 @@ export function CoreCard({ numeral, name, target, done, subtasks, completions, o
           </div>
         );
       })}
+
+      {exercisePlan && (
+        <>
+          <hr className={`border-none h-px mt-3 mb-2 ${done ? "bg-[#3a342d]" : "bg-hair-2"}`} />
+          <div
+            className={`font-[var(--font-tactical)] text-[10px] tracking-[0.04em] leading-[1.6] ${
+              done ? "text-ink-4" : "text-ink-3"
+            }`}
+          >
+            <span>
+              Strength {exercisePlan.strengthDays}d
+              {exercisePlan.cardioDays > 0 && <> · Cardio {exercisePlan.cardioDays}d</>} ·{" "}
+              {exercisePlan.minutesPerSession} min/session
+            </span>
+            <br />
+            <span>Steps target: {exercisePlan.stepsTarget.toLocaleString()}</span>
+          </div>
+        </>
+      )}
     </div>
   );
 }

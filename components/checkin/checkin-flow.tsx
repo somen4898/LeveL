@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { submitWeighIn, confirmAdjustment } from "@/lib/actions/submit-checkin";
+import { uploadProgressPhoto } from "@/lib/actions/upload-photo";
 import type { WeightTrend, AdjustmentDecision } from "@/lib/domain/checkin";
 
 interface PastCheckin {
@@ -15,7 +16,6 @@ interface Props {
   runId: string;
   userId: string;
   currentDay: number;
-  weekNumber: number;
   pastCheckins: PastCheckin[];
   currentLevel: number;
   alreadyCheckedIn: boolean;
@@ -23,51 +23,46 @@ interface Props {
 
 type Step = "input" | "results" | "confirmed";
 
-export function CheckinFlow({
-  runId,
-  currentDay,
-  weekNumber,
-  pastCheckins,
-  alreadyCheckedIn,
-}: Props) {
+export function CheckinFlow({ runId, currentDay, pastCheckins, alreadyCheckedIn }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [step, setStep] = useState<Step>(alreadyCheckedIn ? "input" : "input");
+  const [step, setStep] = useState<Step>("input");
   const [weight, setWeight] = useState("");
   const [trend, setTrend] = useState<WeightTrend | null>(null);
   const [decision, setDecision] = useState<AdjustmentDecision | null>(null);
+  const [aiAnalysis, setAiAnalysis] = useState<{ reasoning: string; encouragement: string } | null>(
+    null
+  );
   const [editCalories, setEditCalories] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [newLevel, setNewLevel] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [photoStatus, setPhotoStatus] = useState<"idle" | "uploading" | "done">("idle");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Already checked in — show read-only summary
+  // Already checked in today — show read-only summary
   if (alreadyCheckedIn) {
-    const thisWeekStart = (weekNumber - 1) * 7 + 1;
-    const thisWeekEnd = weekNumber * 7;
-    const thisWeekCheckin = pastCheckins.find(
-      (c) => c.day_index >= thisWeekStart && c.day_index <= thisWeekEnd
-    );
+    const todayCheckin = pastCheckins.find((c) => c.day_index === currentDay);
 
     return (
       <div className="max-w-[520px] mx-auto">
         <div className="bg-card border border-hair rounded-[10px] p-8 shadow-[var(--shadow-md)]">
           <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.18em] uppercase text-ink-3">
-            WEEK {weekNumber} · COMPLETED
+            DAY {currentDay} · COMPLETED
           </span>
           <h2 className="font-[var(--font-display)] text-[32px] leading-[1.1] mt-3">
             Check-in recorded.
           </h2>
-          {thisWeekCheckin && (
+          {todayCheckin && (
             <div className="mt-5 flex items-baseline gap-2">
               <span className="font-[var(--font-tactical)] text-[38px] font-semibold tabular-nums">
-                {thisWeekCheckin.weight_kg.toFixed(1)}
+                {todayCheckin.weight_kg.toFixed(1)}
               </span>
               <span className="font-[var(--font-tactical)] text-[14px] text-ink-3">kg</span>
             </div>
           )}
           <p className="text-[14px] text-ink-3 mt-4 font-[var(--font-display)] italic">
-            Come back next week for your next check-in.
+            Come back tomorrow for your next check-in.
           </p>
           <a
             href="/today"
@@ -95,6 +90,7 @@ export function CheckinFlow({
       });
       setTrend(result.trend);
       setDecision(result.decision);
+      setAiAnalysis(result.aiAnalysis ?? null);
       setEditCalories(result.decision.suggestedCalories);
       setStep("results");
     } catch (e) {
@@ -125,12 +121,12 @@ export function CheckinFlow({
     });
   }
 
-  // ─── Step 1: Weight Input ───
+  // ─── Step 1: Weight Input + Photo ───
   if (step === "input") {
     return (
       <div className="max-w-[520px] mx-auto">
         <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.18em] uppercase text-ink-3">
-          WEEKLY CHECK-IN · WEEK {weekNumber}
+          DAILY CHECK-IN · DAY {currentDay}
         </span>
         <h1 className="font-[var(--font-display)] text-[42px] leading-[1.05] tracking-[-0.018em] mt-3">
           Step on the scale.
@@ -156,6 +152,63 @@ export function CheckinFlow({
           </span>
         </div>
 
+        {/* Photo upload */}
+        <div className="mt-4 bg-bone border border-hair-2 rounded-[10px] p-4 flex items-center gap-4">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-ink-3 flex-shrink-0"
+          >
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+          <span className="font-[var(--font-tactical)] text-[11px] tracking-[0.10em] uppercase text-ink-3">
+            Progress photo
+          </span>
+          <span className="font-[var(--font-tactical)] text-[10px] text-ink-4">optional</span>
+          <div className="flex-1" />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setPhotoStatus("uploading");
+              try {
+                const fd = new FormData();
+                fd.append("photo", file);
+                fd.append("runId", runId);
+                fd.append("dayIndex", String(currentDay));
+                await uploadProgressPhoto(fd);
+                setPhotoStatus("done");
+              } catch {
+                setPhotoStatus("idle");
+              }
+              e.target.value = "";
+            }}
+          />
+          <button
+            type="button"
+            disabled={photoStatus === "uploading"}
+            onClick={() => fileInputRef.current?.click()}
+            className="font-[var(--font-tactical)] text-[10px] tracking-[0.14em] uppercase px-3.5 py-1.5 rounded-[6px] border border-hair bg-card text-ink-3 hover:text-ink transition-colors disabled:opacity-50"
+          >
+            {photoStatus === "uploading"
+              ? "Uploading..."
+              : photoStatus === "done"
+                ? "Uploaded"
+                : "Upload"}
+          </button>
+        </div>
+
         {error && <p className="text-ember-d text-[13px] mt-2 font-medium">{error}</p>}
 
         <button
@@ -170,7 +223,7 @@ export function CheckinFlow({
         {pastCheckins.length > 0 && (
           <div className="mt-8">
             <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.18em] uppercase text-ink-3">
-              PAST WEIGH-INS
+              RECENT WEIGH-INS
             </span>
             <div className="mt-3 space-y-0">
               {[...pastCheckins]
@@ -195,7 +248,7 @@ export function CheckinFlow({
                           change > 0 ? "text-ember-d" : change < 0 ? "text-moss" : "text-ink-4"
                         }`}
                       >
-                        {change === 0 ? "—" : `${change > 0 ? "+" : ""}${change.toFixed(1)}`}
+                        {change === 0 ? "\u2014" : `${change > 0 ? "+" : ""}${change.toFixed(1)}`}
                       </span>
                     </div>
                   );
@@ -213,9 +266,8 @@ export function CheckinFlow({
 
     return (
       <div className="max-w-[520px] mx-auto">
-        {/* Trend summary */}
         <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.18em] uppercase text-ink-3">
-          WEEK {weekNumber} · RESULTS
+          DAY {currentDay} · RESULTS
         </span>
 
         <div className="mt-4 flex items-baseline gap-3">
@@ -303,9 +355,24 @@ export function CheckinFlow({
                 onClick={handleSkip}
                 className="h-11 px-5 text-ink-4 rounded-[8px] font-[var(--font-ui)] text-[13px] font-medium hover:text-bone transition-colors"
               >
-                Skip this week
+                Skip
               </button>
             </div>
+          </div>
+        )}
+
+        {/* AI Analysis card */}
+        {aiAnalysis && (
+          <div className="mt-4 bg-bone border border-hair rounded-[10px] p-5">
+            <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.18em] uppercase text-ink-3">
+              AI ANALYSIS
+            </span>
+            <p className="font-[var(--font-ui)] text-[13px] text-ink-2 mt-2 leading-[1.6]">
+              {aiAnalysis.reasoning}
+            </p>
+            <p className="font-[var(--font-ui)] text-[13px] text-ink-3 mt-3 italic">
+              {aiAnalysis.encouragement}
+            </p>
           </div>
         )}
       </div>

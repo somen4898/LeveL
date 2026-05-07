@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -9,6 +10,15 @@ import {
 } from "@/lib/domain/checkin";
 import { calculateBMR, calculateTDEE } from "@/lib/domain/calculator";
 import { SubmitCheckinSchema, ConfirmAdjustmentSchema } from "@/lib/schemas/checkin";
+import { callAI } from "@/lib/ai/call";
+import { PROMPTS } from "@/lib/ai/prompts";
+
+const AICheckinSchema = z.object({
+  suggestedCalories: z.number(),
+  suggestedProtein: z.number(),
+  reasoning: z.string(),
+  encouragement: z.string(),
+});
 
 export async function submitWeighIn(rawInput: unknown) {
   const input = SubmitCheckinSchema.parse(rawInput);
@@ -21,13 +31,15 @@ export async function submitWeighIn(rawInput: unknown) {
   if (authError || !user) throw new Error("Unauthorized");
 
   // Insert into weight_checkins
-  await supabase.from("weight_checkins").insert({
+  const { error: insertErr } = await supabase.from("weight_checkins").insert({
     run_id: input.runId,
     user_id: user.id,
     weight_kg: input.weightKg,
     day_index: input.dayIndex,
+    checkin_date: new Date().toISOString().split("T")[0],
     notes: input.notes ?? null,
   } as never);
+  if (insertErr) throw new Error(`Weight insert failed: ${insertErr.message}`);
 
   // Fetch all checkins for this run ordered by day_index
   const { data: allCheckins } = await supabase
@@ -101,10 +113,62 @@ export async function submitWeighIn(rawInput: unknown) {
     sex,
   });
 
+  // Fetch current protein target
+  let currentProtein = 150; // sensible default
+  if (fuelCoreIds.length > 0) {
+    const { data: proteinSubtask } = await supabase
+      .from("subtasks")
+      .select("target_numeric")
+      .in("core_id", fuelCoreIds)
+      .eq("unit", "g")
+      .limit(1)
+      .single();
+
+    const protSub = proteinSubtask as { target_numeric: number | null } | null;
+    if (protSub?.target_numeric != null) {
+      currentProtein = protSub.target_numeric;
+    }
+  }
+
+  // AI enriched analysis (non-blocking — falls back to null on failure)
+  let aiAnalysis: { reasoning: string; encouragement: string } | null = null;
+  try {
+    const weekNumber = Math.ceil(input.dayIndex / 7);
+    const aiResult = await callAI({
+      prompt: PROMPTS.weeklyCheckinAnalysis({
+        goal,
+        currentCalories,
+        currentProtein,
+        weightTrend: {
+          changeKg: trend.changeKg,
+          changePercent: trend.changePercent,
+          direction: trend.direction,
+          weeksOfData: trend.weeksOfData,
+        },
+        weekNumber,
+        domainDecision: {
+          shouldAdjust: decision.shouldAdjust,
+          suggestedCalories: decision.suggestedCalories,
+          reasoning: decision.reasoning,
+          rule: decision.rule,
+        },
+      }),
+      schema: AICheckinSchema,
+      model: "fast",
+    });
+    aiAnalysis = {
+      reasoning: aiResult.reasoning,
+      encouragement: aiResult.encouragement,
+    };
+  } catch {
+    // AI failure is non-fatal — domain logic is the source of truth
+    aiAnalysis = null;
+  }
+
   revalidatePath("/today");
   revalidatePath("/check-in");
 
-  return { trend, decision };
+  return { trend, decision, aiAnalysis };
 }
 
 export async function confirmAdjustment(rawInput: unknown) {

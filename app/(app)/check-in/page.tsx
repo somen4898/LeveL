@@ -31,7 +31,6 @@ export default async function CheckInPage() {
 
   const now = new Date();
   const currentDay = dayIndex(new Date(runData.start_date), now);
-  const weekNumber = Math.ceil(currentDay / 7);
 
   // Fetch past weight checkins
   const { data: checkins } = await supabase
@@ -46,17 +45,13 @@ export default async function CheckInPage() {
     created_at: string;
   }[];
 
-  // Check if already checked in this week
-  const weekStart = (weekNumber - 1) * 7 + 1;
-  const weekEnd = weekNumber * 7;
-  const alreadyCheckedIn = pastCheckins.some(
-    (c) => c.day_index >= weekStart && c.day_index <= weekEnd
-  );
+  // Check if already checked in today
+  const alreadyCheckedIn = pastCheckins.some((c) => c.day_index === currentDay);
 
   return (
     <>
       <Topbar
-        crumb={`WEEKLY CHECK-IN · WEEK ${weekNumber}`}
+        crumb={`DAILY CHECK-IN · DAY ${currentDay}`}
         status={alreadyCheckedIn ? "Completed" : "Due"}
         statusKind={alreadyCheckedIn ? "moss" : "ember"}
       />
@@ -65,7 +60,6 @@ export default async function CheckInPage() {
           runId={runId}
           userId={user.id}
           currentDay={currentDay}
-          weekNumber={weekNumber}
           pastCheckins={pastCheckins}
           currentLevel={runData.current_level}
           alreadyCheckedIn={alreadyCheckedIn}

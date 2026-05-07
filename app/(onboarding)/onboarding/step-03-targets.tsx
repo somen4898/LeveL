@@ -95,8 +95,8 @@ export function StepTargets({ state, setState, onNext, onBack }: StepProps) {
   async function runAI() {
     setAiLoading(true);
     try {
-      const { ai } = await import("@/lib/ai");
-      const result = await ai.calculateFromQuestionnaire({
+      const { calculateWithAI } = await import("@/lib/actions/calculate-targets");
+      const result = await calculateWithAI({
         age: state.age,
         sex: state.sex,
         weightKg: state.weightKg,
@@ -335,7 +335,7 @@ export function StepTargets({ state, setState, onNext, onBack }: StepProps) {
                 <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.16em] uppercase text-ink-3 block mb-2">
                   AI REASONING
                 </span>
-                <p className="font-[var(--font-display)] italic text-[16px] leading-[1.5] text-ink-2">
+                <p className="font-[var(--font-ui)] text-[13px] leading-[1.6] text-ink-2">
                   {aiReasoning}
                 </p>
                 {aiWarnings.length > 0 && (

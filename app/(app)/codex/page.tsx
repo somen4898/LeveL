@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Topbar } from "@/components/shell/topbar";
+import { WeightCalendar } from "@/components/codex/weight-calendar";
+import { ReasoningArchive } from "@/components/codex/reasoning-archive";
+import { dayIndex } from "@/lib/utils/dates";
 
 export default async function CodexPage() {
   const supabase = await createClient();
@@ -18,6 +21,11 @@ export default async function CodexPage() {
   const runId = (profile as { active_run_id: string | null } | null)?.active_run_id;
   if (!runId) redirect("/onboarding");
 
+  // Fetch run for current day
+  const { data: run } = await supabase.from("runs").select("start_date").eq("id", runId).single();
+  const runData = run as { start_date: string } | null;
+  const currentDay = runData?.start_date ? dayIndex(new Date(runData.start_date), new Date()) : 1;
+
   // Weight check-ins
   const { data: weightCheckins } = await supabase
     .from("weight_checkins")
@@ -31,19 +39,6 @@ export default async function CodexPage() {
     checkin_date: string;
     weight_kg: number;
     notes: string | null;
-  }[];
-
-  // Progress photos
-  const { data: progressPhotos } = await supabase
-    .from("progress_photos")
-    .select("id, day_index, photo_date")
-    .eq("run_id", runId)
-    .order("day_index");
-
-  const photosData = (progressPhotos ?? []) as {
-    id: string;
-    day_index: number;
-    photo_date: string;
   }[];
 
   // Qualifying days
@@ -81,83 +76,22 @@ export default async function CodexPage() {
     <>
       <Topbar crumb="CODEX" sub="Reference and reasoning archive" />
       <div className="flex-1 overflow-auto p-8 pb-12">
-        {/* Weight history */}
+        {/* Weight calendar */}
         <div className="mb-8">
           <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.18em] uppercase text-ink-3 block mb-3">
-            Weight history
+            Weight history · {weightData.length} check-ins
           </span>
           {weightData.length === 0 ? (
             <p className="text-[13px] text-ink-3 italic">No weight check-ins recorded yet.</p>
           ) : (
-            <div className="flex flex-col border border-hair rounded-[10px] overflow-hidden bg-card">
-              {weightData.map((w, i) => {
-                const prev = i > 0 ? weightData[i - 1] : null;
-                const delta = prev ? w.weight_kg - prev.weight_kg : null;
-                return (
-                  <div
-                    key={w.id}
-                    className={`flex items-center gap-4 px-5 py-3 ${
-                      i < weightData.length - 1 ? "border-b border-hair-2" : ""
-                    } bg-bone`}
-                  >
-                    <span className="font-[var(--font-tactical)] text-[22px] font-semibold tabular-nums w-[88px]">
-                      {w.weight_kg.toFixed(1)} kg
-                    </span>
-                    <span className="font-[var(--font-tactical)] text-[11px] tracking-[0.1em] uppercase text-ink-3 w-[56px]">
-                      Day {w.day_index}
-                    </span>
-                    <span className="flex-1 text-[12px] text-ink-3 italic">{w.notes ?? ""}</span>
-                    {delta !== null && (
-                      <span
-                        className={`font-[var(--font-tactical)] text-[12px] font-semibold tabular-nums ${
-                          delta > 0 ? "text-ember" : delta < 0 ? "text-moss" : "text-ink-3"
-                        }`}
-                      >
-                        {delta > 0 ? "+" : ""}
-                        {delta.toFixed(1)} kg
-                      </span>
-                    )}
-                    {delta === null && (
-                      <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.1em] uppercase text-ink-4">
-                        Baseline
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Progress photos */}
-        <div className="mb-8">
-          <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.18em] uppercase text-ink-3 block mb-3">
-            Progress photos · {photosData.length} uploaded
-          </span>
-          {photosData.length === 0 ? (
-            <p className="text-[13px] text-ink-3 italic">No progress photos uploaded yet.</p>
-          ) : (
-            <div className="flex flex-col border border-hair rounded-[10px] overflow-hidden bg-card">
-              {photosData.map((p, i) => (
-                <div
-                  key={p.id}
-                  className={`flex items-center gap-4 px-5 py-3 bg-bone ${
-                    i < photosData.length - 1 ? "border-b border-hair-2" : ""
-                  }`}
-                >
-                  <span className="font-[var(--font-tactical)] text-[11px] tracking-[0.1em] uppercase text-ink-3 w-[56px]">
-                    Day {p.day_index}
-                  </span>
-                  <span className="text-[12px] text-ink-2">
-                    {new Date(p.photo_date).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <WeightCalendar
+              weights={weightData.map((w) => ({
+                day_index: w.day_index,
+                weight_kg: w.weight_kg,
+                notes: w.notes,
+              }))}
+              totalDays={currentDay}
+            />
           )}
         </div>
 
@@ -189,55 +123,8 @@ export default async function CodexPage() {
           </div>
         </div>
 
-        {/* Tag filter */}
-        <div className="flex gap-2 mb-6">
-          {Object.entries(tagCounts).map(([tag, count]) => (
-            <span
-              key={tag}
-              className="font-[var(--font-tactical)] text-[10px] tracking-[0.1em] uppercase px-2.5 py-1 rounded-full bg-card border border-hair text-ink-2 font-medium"
-            >
-              {tag} · {count}
-            </span>
-          ))}
-        </div>
-
-        {/* Reasoning archive */}
-        <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.18em] uppercase text-ink-3 block mb-3">
-          Reasoning archive
-        </span>
-        <div className="flex flex-col gap-3">
-          {reasonsArr.map((r) => (
-            <div
-              key={r.id}
-              className="bg-card border border-hair rounded-[10px] p-5 border-l-[3px] border-l-ember"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                {r.optionals && (
-                  <span className="font-[var(--font-tactical)] text-[9px] tracking-[0.14em] uppercase px-[7px] py-[3px] border border-ink rounded text-ink font-semibold">
-                    {r.optionals.label}
-                  </span>
-                )}
-                {r.tag && (
-                  <span className="font-[var(--font-tactical)] text-[9px] tracking-[0.14em] uppercase px-[7px] py-[3px] bg-ink text-bone rounded font-semibold">
-                    {r.tag}
-                  </span>
-                )}
-                <span className="font-[var(--font-tactical)] text-[10px] text-ink-3 tracking-[0.04em] ml-auto">
-                  {new Date(r.logged_at).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                  })}
-                </span>
-              </div>
-              <p className="font-[var(--font-display)] italic text-[17px] leading-[1.45] text-ink">
-                &ldquo;{r.reason_text}&rdquo;
-              </p>
-            </div>
-          ))}
-          {reasonsArr.length === 0 && (
-            <p className="text-[13px] text-ink-3 italic">No skip reasons recorded yet.</p>
-          )}
-        </div>
+        {/* Tag filter + Reasoning archive */}
+        <ReasoningArchive reasonsArr={reasonsArr} tagCounts={tagCounts} />
       </div>
     </>
   );

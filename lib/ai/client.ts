@@ -16,7 +16,7 @@ export function getClient(): Anthropic {
 export const AI_CONFIG = {
   models: {
     fast: "claude-haiku-4-5-20251001", // formatting, structuring
-    reasoning: "claude-sonnet-4-6-20250514", // analysis, suggestions, nutrition
+    reasoning: "claude-sonnet-4-6", // analysis, suggestions, nutrition
   },
   defaults: {
     maxTokens: 512,

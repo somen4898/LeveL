@@ -105,7 +105,7 @@ export default async function SettingsPage() {
         {/* Contract notice */}
         <div className="bg-ink text-bone rounded-[10px] p-[20px_26px]">
           <div className="flex items-center gap-4">
-            <span className="font-[var(--font-display)] text-[32px] italic text-ember-l">§</span>
+            <span className="font-[var(--font-display)] text-[32px] italic text-ember-l">!</span>
             <div className="flex flex-col flex-1">
               <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.18em] uppercase text-ink-4">
                 The contract holds

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { DEV_ONBOARDING, isDevMode } from "@/lib/dev-defaults";
 import { StepWelcome } from "./step-01-welcome";
 import { StepWhy } from "./step-02-why";
 import { StepTargets } from "./step-03-targets";
@@ -87,8 +88,11 @@ const STEPS = [StepWelcome, StepWhy, StepTargets, StepSchedule, StepSign];
 const STEP_LABELS = ["Welcome", "The Why", "Targets", "Schedule", "Sign"];
 
 export default function OnboardingPage() {
+  const dev = isDevMode();
   const [step, setStep] = useState(0);
-  const [state, setState] = useState<OnboardingState>(INITIAL_STATE);
+  const [state, setState] = useState<OnboardingState>(
+    dev ? { ...INITIAL_STATE, ...DEV_ONBOARDING } : INITIAL_STATE
+  );
 
   useEffect(() => {
     async function fetchDisplayName() {
@@ -146,6 +150,25 @@ export default function OnboardingPage() {
             </span>
           </div>
         </div>
+
+        {/* Dev mode banner */}
+        {dev && (
+          <div className="flex items-center gap-3 mt-4 px-4 py-2.5 bg-amber-100 border border-amber-300 rounded-lg text-[13px]">
+            <span className="font-[var(--font-tactical)] text-[10px] tracking-[0.14em] uppercase font-semibold text-amber-700">
+              DEV MODE
+            </span>
+            <span className="text-amber-800">Form auto-filled with test data.</span>
+            <button
+              onClick={() => {
+                setStep(4);
+                window.scrollTo(0, 0);
+              }}
+              className="ml-auto px-3 py-1.5 bg-amber-600 text-white rounded text-[12px] font-semibold hover:bg-amber-700 transition-colors"
+            >
+              Skip to Sign →
+            </button>
+          </div>
+        )}
 
         {/* Step content */}
         <div

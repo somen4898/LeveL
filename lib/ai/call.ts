@@ -29,11 +29,21 @@ export async function callAI<T extends z.ZodTypeAny>(options: CallOptions<T>): P
   const block = response.content[0];
   if (block.type !== "text") throw new Error("Unexpected response type");
 
-  // Strip markdown fences if the model wraps them
-  const raw = block.text
+  // Extract JSON from response — handles markdown fences, trailing text, etc.
+  let raw = block.text.trim();
+
+  // Strip markdown fences
+  raw = raw
     .replace(/^```json?\s*\n?/i, "")
     .replace(/\n?```\s*$/i, "")
     .trim();
+
+  // Find the first { and last matching } to extract just the JSON object
+  const start = raw.indexOf("{");
+  const end = raw.lastIndexOf("}");
+  if (start !== -1 && end !== -1 && end > start) {
+    raw = raw.slice(start, end + 1);
+  }
 
   return options.schema.parse(JSON.parse(raw));
 }

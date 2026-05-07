@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Topbar } from "@/components/shell/topbar";
 import { TodayContent } from "@/components/today/today-content";
 import { dayIndex } from "@/lib/utils/dates";
+import { calculateExercisePlan, type Goal } from "@/lib/domain/calculator";
 
 export default async function TodayPage() {
   const supabase = await createClient();
@@ -28,6 +29,7 @@ export default async function TodayPage() {
     end_date: string;
     current_level: number;
     level_streak: number;
+    goal: Goal | null;
   } | null;
   if (!runData?.start_date) redirect("/onboarding");
 
@@ -53,8 +55,28 @@ export default async function TodayPage() {
     .select("*")
     .in("core_id", coreIds.length > 0 ? coreIds : ["none"]);
 
-  // Fetch today's daily log
+  // Auto-close any past days still marked in_progress
   const todayDate = now.toISOString().split("T")[0];
+  const { data: staleLogs } = await supabase
+    .from("daily_logs")
+    .select("id, log_date")
+    .eq("run_id", runId)
+    .eq("status", "in_progress")
+    .lt("log_date", todayDate);
+
+  if (staleLogs && staleLogs.length > 0) {
+    for (const stale of staleLogs as { id: string; log_date: string }[]) {
+      await supabase
+        .from("daily_logs")
+        .update({
+          status: "failed",
+          closed_at: new Date().toISOString(),
+        } as never)
+        .eq("id", stale.id);
+    }
+  }
+
+  // Fetch today's daily log
   let { data: dailyLog } = await supabase
     .from("daily_logs")
     .select("*")
@@ -110,6 +132,30 @@ export default async function TodayPage() {
     .eq("status", "qualified");
 
   const qualifyingDays = qualifiedLogs?.length ?? 0;
+
+  // Compute exercise plan from run goal + fuel calorie target
+  const goal: Goal = runData.goal ?? "gain";
+  const allSubtasks = (subtasks ?? []) as {
+    id: string;
+    core_id: string;
+    unit: string | null;
+    target_numeric: number | null;
+  }[];
+  const fuelCore = coresData.find((c) => c.kind === "fuel");
+  const kcalSubtask = fuelCore
+    ? allSubtasks.find((s) => s.core_id === fuelCore.id && s.unit === "kcal")
+    : null;
+  const calorieTarget = kcalSubtask?.target_numeric ?? 2500;
+  const exercisePlan = calculateExercisePlan(goal, calorieTarget);
+
+  // Check if user already checked in today
+  const { data: todayCheckin } = await supabase
+    .from("weight_checkins")
+    .select("id")
+    .eq("run_id", runId)
+    .eq("day_index", Math.min(currentDay, 90))
+    .limit(1);
+  const checkedInToday = (todayCheckin?.length ?? 0) > 0;
 
   const dayLabel = now
     .toLocaleDateString("en-US", {
@@ -190,6 +236,8 @@ export default async function TodayPage() {
           qualifyingDays={qualifyingDays}
           endDate={runData.end_date}
           userId={user.id}
+          checkedInToday={checkedInToday}
+          exercisePlan={exercisePlan}
         />
       </div>
     </>

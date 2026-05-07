@@ -44,6 +44,14 @@ interface Props {
   qualifyingDays: number;
   endDate: string;
   userId: string;
+  checkedInToday: boolean;
+  exercisePlan?: {
+    strengthDays: number;
+    cardioDays: number;
+    minutesPerSession: number;
+    stepsTarget: number;
+    reasoning: string;
+  };
 }
 
 export function TodayContent({
@@ -60,6 +68,8 @@ export function TodayContent({
   qualifyingDays,
   endDate,
   userId,
+  checkedInToday,
+  exercisePlan,
 }: Props) {
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -150,19 +160,21 @@ export function TodayContent({
 
   return (
     <>
-      {/* Check-in banner */}
-      {currentDay >= 7 && currentDay % 7 <= 1 && (
-        <a
-          href="/check-in"
-          className="flex items-center gap-3 p-4 mb-4 bg-[#fdf0e4] border border-ember-l rounded-[10px] text-ember-d text-[13px] font-medium no-underline hover:bg-[#f9e0cc] transition-colors"
-        >
-          <span className="w-2 h-2 rounded-full bg-ember" />
-          Weekly check-in available
-          <span className="ml-auto font-[var(--font-tactical)] text-[10px] tracking-[0.14em] uppercase">
-            WEEK {Math.ceil(currentDay / 7)}
-          </span>
-        </a>
-      )}
+      {/* Daily check-in banner */}
+      <a
+        href="/check-in"
+        className={`flex items-center gap-3 p-4 mb-4 rounded-[10px] text-[13px] font-medium no-underline transition-colors ${
+          checkedInToday
+            ? "bg-[#eef3ef] border border-[#c3d4c5] text-moss"
+            : "bg-[#fdf0e4] border border-ember-l text-ember-d hover:bg-[#f9e0cc]"
+        }`}
+      >
+        <span className={`w-2 h-2 rounded-full ${checkedInToday ? "bg-moss" : "bg-ember"}`} />
+        {checkedInToday ? "Checked in today" : "Daily check-in"}
+        <span className="ml-auto font-[var(--font-tactical)] text-[10px] tracking-[0.14em] uppercase">
+          DAY {currentDay}
+        </span>
+      </a>
 
       {/* Hero: today's contract status */}
       <div className="bg-card border border-hair rounded-[10px] p-7 shadow-[var(--shadow-md)]">
@@ -227,6 +239,7 @@ export function TodayContent({
                 subtasks={coreSubs}
                 completions={completions}
                 onToggle={toggleSubtask}
+                {...(core.kind === "body" && exercisePlan ? { exercisePlan } : {})}
               />
             );
           })}
